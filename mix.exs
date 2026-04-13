@@ -21,9 +21,10 @@ defmodule Excanon.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-      {:credo, "~> 1.7.17", only: [:dev]}
+      {:credo, "~> 1.7.17", only: [:dev]},
+      {:sobelow, "~> 0.14.1", only: [:dev]},
+      {:jason, "~> 1.4"},
+      {:odgn_json_pointer, "~> 3.1.0"}
     ]
   end
 end
