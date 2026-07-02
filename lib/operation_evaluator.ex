@@ -1,4 +1,6 @@
 defmodule OperationEvaluator do
+  @moduledoc false
+
   alias JSONPointer
 
   # Logic operators
@@ -114,7 +116,7 @@ defmodule OperationEvaluator do
 
     case JSONPointer.set(facts, formatted_key, evaluated_value) do
       {:ok, modified_facts, _} -> {:ok, modified_facts}
-      {:error, message, _} -> raise ArgumentError, message
+      {:error, message} -> raise ArgumentError, message
     end
   end
 

@@ -10,7 +10,7 @@ A flexible and powerful rule engine library for Elixir that enables complex busi
 
 - **JSON-based Rules**: Define rules in human-readable JSON format
 - **Rich Operations**: Support for logical, arithmetic, and data manipulation operations
-- **Stateful Evaluation**: Maintain rule state across evaluations using agents
+- **Stateful Evaluation**: Maintain rules in memory across evaluations using agents
 - **JSON Pointer Support**: Access nested data structures easily
 - **Type Safety**: Full Elixir type specifications and validation
 
@@ -38,7 +38,16 @@ Here's a complete example of setting up and using the rule engine:
 
 ```elixir
 # 1. Start a rule engine agent
-{:ok, _pid} = StatefulRuleEngine.start_link(:order_engine, [])
+{:ok, _pid} = StatefulRuleEngine.initialize(:order_engine, [])
+
+# Alternatively, add StatefulRuleEngine to your application's supervision tree for automatic startup:
+# In your application.ex:
+# def start(_type, _args) do
+#   children = [
+#     {Excanon.StatefulRuleEngine, :order_engine}
+#   ]
+#   Supervisor.start_link(children, strategy: :one_for_one)
+# end
 
 # 2. Define rules in JSON
 rules_json = ~s([
@@ -181,6 +190,12 @@ Excanon consists of several key modules:
 
 - **`Excanon`**: Main module with library overview
 - **`StatefulRuleEngine`**: Agent-based rule engine with JSON loading
+
+### Stateful Rule Engine Caveats
+
+The `StatefulRuleEngine` uses Elixir agents for state management, which provides simple and efficient state persistence. However, agents are not designed for high-concurrency write operations and can lead to race conditions if multiple processes attempt to modify the rule state simultaneously. For example, loading new rules concurrently for the same rule engine id may result in inconsistent state.
+
+**Usage Recommendations**: The stateful rule engine is best suited for scenarios where rules are long-lasting with few or no changes during their lifetime. Load rules once at startup or during configuration, then perform multiple evaluations without frequent updates. For applications requiring frequent rule modifications or high-concurrency updates, consider using a stateless rule engine.
 
 ## Error Handling
 

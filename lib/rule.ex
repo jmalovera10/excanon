@@ -1,4 +1,6 @@
 defmodule Rule do
+  @moduledoc false
+
   @enforce_keys [:name, :description, :conditions, :actions]
   defstruct [:name, :description, :conditions, :actions]
 
