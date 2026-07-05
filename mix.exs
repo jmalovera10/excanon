@@ -5,7 +5,7 @@ defmodule Excanon.MixProject do
     [
       app: :excanon,
       version: "0.1.0",
-      elixir: "~> 1.18",
+      elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       description:
         "A flexible rule engine library for Elixir that allows you to define and execute business rules using JSON-based configurations.",
