@@ -39,8 +39,6 @@ defmodule StatefulRuleEngine do
 
   use Agent
 
-  require Jason
-
   def start_link(id, _initial_value) do
     Agent.start_link(fn -> [] end, name: id)
   end
