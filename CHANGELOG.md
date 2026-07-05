@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Initial changelog file.
+- 
 
 ### Fixed
 
@@ -18,10 +18,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - 
 
-## [0.1.0] - 2026-04-12
+## [0.1.0] - 2026-07-04
 
 ### Added
 
 - Initial public release of Excanon.
-- Basic rule engine operations and JSON-driven rule loading.
-- Stateful rule evaluation and JSON Pointer support.
+- Add basic rule engine operations and JSON-driven rule loading.
+- Add stateful rule engine for in-memory rule keeping and evaluation.
+- Add docs for contribution, release, and pull requests.
+- Add first CI pipeline for contribution quality checking.
+- Add stateful rule evaluation and JSON Pointer support.
