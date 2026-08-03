@@ -50,6 +50,93 @@ defmodule StatefulRuleEngineTest do
 
       assert :ok = StatefulRuleEngine.load_rules(:test_engine, rules_json)
     end
+
+    test "with duplicate rule names, returns error" do
+      rules_json = """
+      [
+        {"name": "a", "description": "d", "conditions": {"eq": [1, 1]}, "actions": []},
+        {"name": "a", "description": "d", "conditions": {"eq": [1, 1]}, "actions": []}
+      ]
+      """
+
+      assert {:error, "Duplicate rule names: a"} =
+               StatefulRuleEngine.load_rules(:test_engine, rules_json)
+    end
+
+    test "with unknown after reference, returns error" do
+      rules_json = """
+      [
+        {
+          "name": "a",
+          "description": "d",
+          "conditions": {"eq": [1, 1]},
+          "actions": [],
+          "after": ["missing"]
+        }
+      ]
+      """
+
+      assert {:error, "Rule 'a' references unknown rule 'missing' in after"} =
+               StatefulRuleEngine.load_rules(:test_engine, rules_json)
+    end
+
+    test "with unknown requires reference, returns error" do
+      rules_json = """
+      [
+        {
+          "name": "a",
+          "description": "d",
+          "conditions": {"eq": [1, 1]},
+          "actions": [],
+          "requires": ["missing"]
+        }
+      ]
+      """
+
+      assert {:error, "Rule 'a' requires unknown rule 'missing'"} =
+               StatefulRuleEngine.load_rules(:test_engine, rules_json)
+    end
+
+    test "with a dependency cycle, returns error" do
+      rules_json = """
+      [
+        {
+          "name": "a",
+          "description": "d",
+          "conditions": {"eq": [1, 1]},
+          "actions": [],
+          "after": ["b"]
+        },
+        {
+          "name": "b",
+          "description": "d",
+          "conditions": {"eq": [1, 1]},
+          "actions": [],
+          "after": ["a"]
+        }
+      ]
+      """
+
+      assert {:error, "Cycle detected among rules [a, b]"} =
+               StatefulRuleEngine.load_rules(:test_engine, rules_json)
+    end
+
+    test "with a self dependency cycle, returns error" do
+      rules_json = """
+      [
+        {
+          "name": "a",
+          "description": "d",
+          "conditions": {"eq": [1, 1]},
+          "actions": [],
+          "after": ["a"]
+        }
+      ]
+      """
+
+      assert {:error, "Cycle detected among rules [a]"} =
+               StatefulRuleEngine.load_rules(:test_engine, rules_json)
+    end
   end
 
   describe "evaluate/2" do
@@ -122,6 +209,144 @@ defmodule StatefulRuleEngineTest do
       assert updated_facts["a"] == 1
       assert updated_facts["c"] == 3
       refute Map.has_key?(updated_facts, "b")
+    end
+
+    test "with after, executes referenced rule first regardless of JSON order" do
+      rules_json = """
+      [
+        {
+          "name": "b",
+          "description": "Runs after a",
+          "conditions": {"eq": [{"obj": "order"}, 1]},
+          "actions": [{"set": ["order", 2]}],
+          "after": ["a"]
+        },
+        {
+          "name": "a",
+          "description": "Sets order to 1",
+          "conditions": {"eq": [1, 1]},
+          "actions": [{"set": ["order", 1]}]
+        }
+      ]
+      """
+
+      :ok = StatefulRuleEngine.load_rules(:test_engine, rules_json)
+
+      facts = %{"order" => 0}
+      assert {:ok, updated_facts} = StatefulRuleEngine.evaluate(:test_engine, facts)
+      assert updated_facts["order"] == 2
+    end
+
+    test "with after, dependent still runs even if referenced rule's conditions do not match" do
+      rules_json = """
+      [
+        {
+          "name": "a",
+          "description": "Never matches",
+          "conditions": {"eq": [1, 2]},
+          "actions": [{"set": ["a_ran", true]}]
+        },
+        {
+          "name": "b",
+          "description": "Always matches",
+          "conditions": {"eq": [1, 1]},
+          "actions": [{"set": ["b_ran", true]}],
+          "after": ["a"]
+        }
+      ]
+      """
+
+      :ok = StatefulRuleEngine.load_rules(:test_engine, rules_json)
+
+      assert {:ok, updated_facts} = StatefulRuleEngine.evaluate(:test_engine, %{})
+      refute Map.has_key?(updated_facts, "a_ran")
+      assert updated_facts["b_ran"] == true
+    end
+
+    test "with requires, dependent does not run when referenced rule did not fire" do
+      rules_json = """
+      [
+        {
+          "name": "a",
+          "description": "Never matches",
+          "conditions": {"eq": [1, 2]},
+          "actions": [{"set": ["a_ran", true]}]
+        },
+        {
+          "name": "b",
+          "description": "Would match on its own",
+          "conditions": {"eq": [1, 1]},
+          "actions": [{"set": ["b_ran", true]}],
+          "requires": ["a"]
+        }
+      ]
+      """
+
+      :ok = StatefulRuleEngine.load_rules(:test_engine, rules_json)
+
+      assert {:ok, updated_facts} = StatefulRuleEngine.evaluate(:test_engine, %{})
+      refute Map.has_key?(updated_facts, "a_ran")
+      refute Map.has_key?(updated_facts, "b_ran")
+    end
+
+    test "with requires, dependent runs normally when referenced rule fired" do
+      rules_json = """
+      [
+        {
+          "name": "a",
+          "description": "Matches",
+          "conditions": {"eq": [1, 1]},
+          "actions": [{"set": ["a_ran", true]}]
+        },
+        {
+          "name": "b",
+          "description": "Requires a",
+          "conditions": {"eq": [1, 1]},
+          "actions": [{"set": ["b_ran", true]}],
+          "requires": ["a"]
+        }
+      ]
+      """
+
+      :ok = StatefulRuleEngine.load_rules(:test_engine, rules_json)
+
+      assert {:ok, updated_facts} = StatefulRuleEngine.evaluate(:test_engine, %{})
+      assert updated_facts["a_ran"] == true
+      assert updated_facts["b_ran"] == true
+    end
+
+    test "with transitive requires, an unmet prerequisite skips the whole chain" do
+      rules_json = """
+      [
+        {
+          "name": "a",
+          "description": "Never matches",
+          "conditions": {"eq": [1, 2]},
+          "actions": [{"set": ["a_ran", true]}]
+        },
+        {
+          "name": "b",
+          "description": "Requires a",
+          "conditions": {"eq": [1, 1]},
+          "actions": [{"set": ["b_ran", true]}],
+          "requires": ["a"]
+        },
+        {
+          "name": "c",
+          "description": "Requires b",
+          "conditions": {"eq": [1, 1]},
+          "actions": [{"set": ["c_ran", true]}],
+          "requires": ["b"]
+        }
+      ]
+      """
+
+      :ok = StatefulRuleEngine.load_rules(:test_engine, rules_json)
+
+      assert {:ok, updated_facts} = StatefulRuleEngine.evaluate(:test_engine, %{})
+      refute Map.has_key?(updated_facts, "a_ran")
+      refute Map.has_key?(updated_facts, "b_ran")
+      refute Map.has_key?(updated_facts, "c_ran")
     end
 
     test "with invalid id, raises ArgumentError" do
