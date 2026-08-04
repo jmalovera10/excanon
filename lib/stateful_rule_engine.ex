@@ -89,28 +89,25 @@ defmodule StatefulRuleEngine do
   end
 
   defp to_rule(raw_rules) when is_list(raw_rules) do
-    try do
-      result =
-        Enum.map(raw_rules, fn raw_rule ->
-          case to_rule(raw_rule) do
-            {:ok, rule} -> rule
-            _ -> raise ArgumentError
-          end
-        end)
-
-      {:ok, result}
-    rescue
-      _ -> {:error, "Invalid rule format"}
+    Enum.reduce_while(raw_rules, {:ok, []}, fn raw_rule, {:ok, acc} ->
+      case to_rule(raw_rule) do
+        {:ok, rule} -> {:cont, {:ok, [rule | acc]}}
+        {:error, _reason} = error -> {:halt, error}
+      end
+    end)
+    |> case do
+      {:ok, rules} -> {:ok, Enum.reverse(rules)}
+      error -> error
     end
   end
 
   defp to_rule(raw_rule) when is_map(raw_rule) do
-    try do
-      {:ok, Rule.new!(raw_rule)}
-    rescue
-      _ -> {:error, "Invalid rule format"}
-    end
+    {:ok, Rule.new!(raw_rule)}
+  rescue
+    e in ArgumentError -> {:error, Exception.message(e)}
   end
+
+  defp to_rule(_raw_rule), do: {:error, "Invalid rule format"}
 
   @doc """
   Evaluates facts against the loaded rules and executes actions for matching conditions.

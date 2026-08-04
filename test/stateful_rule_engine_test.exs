@@ -41,7 +41,7 @@ defmodule StatefulRuleEngineTest do
       ]
       """
 
-      assert {:error, "Invalid rule format"} =
+      assert {:error, "Actions field is required"} =
                StatefulRuleEngine.load_rules(:test_engine, invalid_rules_json)
     end
 
