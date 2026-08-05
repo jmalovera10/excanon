@@ -38,7 +38,7 @@ Here's a complete example of setting up and using the rule engine:
 
 ```elixir
 # 1. Start a rule engine agent
-{:ok, _pid} = StatefulRuleEngine.initialize(:order_engine, [])
+{:ok, _pid} = StatefulRuleEngine.start_link(:order_engine, [])
 
 # Alternatively, add StatefulRuleEngine to your application's supervision tree for automatic startup:
 # In your application.ex:
