@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- 
+
+### Fixed
+
+- 
+
+### Changed
+
+-
+
+## [0.2.0] - 2026-08-07
+
+### Added
+
 - Add `after` field on rules to declare ordering relative to other named rules,
   independent of their position in the loaded JSON array.
 - Add `requires` field on rules to declare a prerequisite: the dependent rule only runs if
@@ -17,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - Fix undescriptive error messages ignores by high level error handling in rule engine.
+- Fix documentation reference to rule engine initialization method.
 
 ### Changed
 
