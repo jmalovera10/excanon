@@ -3,7 +3,7 @@ defmodule StatefulRuleEngineTest do
 
   alias StatefulRuleEngine
 
-  setup do
+  setup_all do
     {:ok, _pid} = StatefulRuleEngine.start_link(:test_engine, [])
     :ok
   end
