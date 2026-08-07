@@ -13,7 +13,12 @@ defmodule StatefulRuleEngine do
   - **Stateful**: Rules persist in an Agent process across evaluations
   - **JSON-based**: Rules defined in JSON format for easy configuration
   - **Sequential execution**: Rules are evaluated in order, with actions modifying facts
-  - **Error handling**: Invalid rules or JSON are rejected with error messages
+  - **Dependency ordering**: Rules may declare `after` to run after other named rules,
+    regardless of their position in the loaded JSON array
+  - **Prerequisite gating**: Rules may declare `requires` to run only if the named rules
+    actually fired (matched) during the same evaluation
+  - **Error handling**: Invalid rules or JSON are rejected with error messages, including
+    duplicate rule names, references to unknown rule names, and dependency cycles
 
   ## Usage
 
@@ -47,13 +52,20 @@ defmodule StatefulRuleEngine do
   Loads rules from a JSON string into the rule engine. This function call is idempotent,
   so each call will replace the existing rules with the new set of rules provided in the JSON string.
 
+  Rules are ordered so that any rule declaring `after` or `requires` always runs after
+  the rules it references, regardless of their position in the JSON array. Rule `name`
+  values must be unique within the set, every `after`/`requires` reference must point to
+  a rule that exists in the set, and the dependency graph must not contain cycles — any of
+  these problems is rejected here, at load time, rather than during evaluation.
+
   ## Parameters
   - `id`: The Agent process identifier
   - `rules`: JSON string containing an array of rule objects
 
   ## Returns
   - `:ok` on successful loading
-  - `{:error, reason}` on failure (invalid JSON or rule structure)
+  - `{:error, reason}` on failure (invalid JSON, invalid rule structure, duplicate names,
+    unknown `after`/`requires` references, or a dependency cycle)
 
   ## Examples
 
@@ -70,37 +82,40 @@ defmodule StatefulRuleEngine do
   """
   def load_rules(id, rules) when is_binary(rules) do
     with {:ok, raw_rules} <- Jason.decode(rules),
-         {:ok, parsed_rules} <- to_rule(raw_rules) do
-      Agent.update(id, fn _ -> parsed_rules end)
+         {:ok, parsed_rules} <- to_rule(raw_rules),
+         {:ok, ordered_rules} <- RuleGraph.build(parsed_rules) do
+      Agent.update(id, fn _ -> ordered_rules end)
     end
   end
 
   defp to_rule(raw_rules) when is_list(raw_rules) do
-    try do
-      result =
-        Enum.map(raw_rules, fn raw_rule ->
-          case to_rule(raw_rule) do
-            {:ok, rule} -> rule
-            _ -> raise ArgumentError
-          end
-        end)
-
-      {:ok, result}
-    rescue
-      _ -> {:error, "Invalid rule format"}
+    Enum.reduce_while(raw_rules, {:ok, []}, fn raw_rule, {:ok, acc} ->
+      case to_rule(raw_rule) do
+        {:ok, rule} -> {:cont, {:ok, [rule | acc]}}
+        {:error, _reason} = error -> {:halt, error}
+      end
+    end)
+    |> case do
+      {:ok, rules} -> {:ok, Enum.reverse(rules)}
+      error -> error
     end
   end
 
   defp to_rule(raw_rule) when is_map(raw_rule) do
-    try do
-      {:ok, Rule.new!(raw_rule)}
-    rescue
-      _ -> {:error, "Invalid rule format"}
-    end
+    {:ok, Rule.new!(raw_rule)}
+  rescue
+    e in ArgumentError -> {:error, Exception.message(e)}
   end
+
+  defp to_rule(_raw_rule), do: {:error, "Invalid rule format"}
 
   @doc """
   Evaluates facts against the loaded rules and executes actions for matching conditions.
+
+  Rules are evaluated in dependency order (as resolved by `load_rules/2`). A rule
+  declaring `requires` only runs if every rule it requires actually fired (matched)
+  earlier in this same evaluation; otherwise it is skipped, and that skip propagates to
+  any rule that in turn requires it.
 
   ## Parameters
   - `id`: The Agent process identifier
@@ -126,18 +141,22 @@ defmodule StatefulRuleEngine do
     raise ArgumentError, "Invalid arguments for evaluation"
   end
 
-  defp execute_rules(rules, original_facts) when is_list(rules) do
-    Enum.reduce(rules, original_facts, fn rule, facts ->
-      execute_rules(rule, facts)
-    end)
+  defp execute_rules(rules, facts) when is_list(rules) do
+    {final_facts, _fired} = Enum.reduce(rules, {facts, %{}}, &execute_rule/2)
+    final_facts
   end
 
-  defp execute_rules(%Rule{} = rule, facts) do
-    if conditions_met?(facts, rule.conditions) do
-      Enum.reduce(rule.actions, facts, &perform_actions/2)
+  defp execute_rule(%Rule{} = rule, {facts, fired}) do
+    if prerequisites_met?(rule, fired) and conditions_met?(facts, rule.conditions) do
+      new_facts = Enum.reduce(rule.actions, facts, &perform_actions/2)
+      {new_facts, Map.put(fired, rule.name, true)}
     else
-      facts
+      {facts, Map.put(fired, rule.name, false)}
     end
+  end
+
+  defp prerequisites_met?(%Rule{requires: requires}, fired) do
+    Enum.all?(requires, &Map.get(fired, &1, false))
   end
 
   defp conditions_met?(facts, conditions) do

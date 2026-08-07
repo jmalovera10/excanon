@@ -90,6 +90,50 @@ facts = %{
 # - customer.loyalty_points: 60
 ```
 
+## Rule Dependencies
+
+By default, rules execute in the order they appear in the loaded JSON array. Two optional
+fields let you declare ordering and prerequisite relationships between rules instead of
+relying on array position:
+
+- **`after`** — ordering only. The referenced rule(s) run first; the dependent rule then
+  evaluates its own conditions and runs (or doesn't) exactly as it normally would, regardless
+  of whether the referenced rule's conditions matched.
+- **`requires`** — ordering plus a gate. The referenced rule(s) run first, and the dependent
+  rule is only evaluated if every rule it requires actually fired (its conditions matched) in
+  the same evaluation. If a required rule didn't fire, the dependent is skipped — and that
+  skip propagates transitively to any rule that in turn requires it.
+
+```json
+[
+  {
+    "name": "apply_discount",
+    "description": "Apply a discount if eligible",
+    "conditions": {"gt": [{"obj": "order.total"}, 100]},
+    "actions": [{"set": ["order.discount", 10]}]
+  },
+  {
+    "name": "log_discount",
+    "description": "Runs after apply_discount regardless of whether it matched",
+    "conditions": {"eq": [1, 1]},
+    "actions": [{"set": ["order.discount_checked", true]}],
+    "after": ["apply_discount"]
+  },
+  {
+    "name": "notify_customer",
+    "description": "Only runs if apply_discount actually fired",
+    "conditions": {"eq": [1, 1]},
+    "actions": [{"set": ["order.discount_notified", true]}],
+    "requires": ["apply_discount"]
+  }
+]
+```
+
+Rule `name` values must be unique within a loaded rule set, every `after`/`requires`
+reference must point to a rule that exists in the set, and the dependency graph must not
+contain cycles. Any of these problems causes `load_rules/2` to return `{:error, reason}`
+instead of loading the rules. Cyclic/iterative rule execution is not supported yet.
+
 ## Operations
 
 Excanon supports a wide range of operations for building complex rules.
@@ -203,6 +247,9 @@ The library provides clear error messages for common issues:
 
 - Invalid JSON in rule definitions
 - Missing required rule fields
+- Duplicate rule names within a loaded rule set
+- Unknown `after`/`requires` references
+- Dependency cycles between rules
 - Invalid operation arguments
 - JSON Pointer resolution failures
 
