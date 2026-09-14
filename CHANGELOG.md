@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- 
+- Add `append`, `in`, and `len` operations for working with lists, strings, and maps in rule
+  conditions and actions.
 
 ### Fixed
 

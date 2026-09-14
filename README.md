@@ -169,6 +169,14 @@ Excanon supports a wide range of operations for building complex rules.
 | `set` | 2 | Set a value in facts at a given path | `{"set": ["order.total", 100]}` |
 | `call` | 1 | Execute an external Elixir script | `{"call": "path/to/script.exs"}` |
 
+### Array Operations
+
+| Keyword | Arguments | Description | Example |
+|---|---|---|---|
+| `len` | 1 | Length of a string, list, or map | `{"len": {"obj": "order.items"}}` |
+| `append` | 2 | Returns a new list with a value appended to the end | `{"append": [{"obj": "order.items"}, new_item]}` |
+| `in` | 2 | Checks whether a value is a member of a list (use `has_key` for map key presence) | `{"in": [{"obj": "user.tier"}, ["gold", "platinum"]]}` |
+
 ### Constants
 
 Numbers, strings, booleans, lists, and `nil` are supported as literal values.
