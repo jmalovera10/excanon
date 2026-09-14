@@ -961,8 +961,9 @@ defmodule OperationEvaluatorTest do
       assert_raise ArgumentError, "len requires a string, list, or map argument", fn ->
         OperationEvaluator.evaluate(nil, input)
       end
+    end
   end
-  
+
   describe "log operation" do
     test "when message is a plain string, should log it and return it unchanged" do
       input = %{"log" => "checkpoint reached"}
