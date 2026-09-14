@@ -775,6 +775,195 @@ defmodule OperationEvaluatorTest do
     end
   end
 
+  describe "in operation" do
+    test "when needle is present in haystack, should return true" do
+      input = %{"in" => [2, [1, 2, 3]]}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      assert result
+    end
+
+    test "when needle is absent from haystack, should return false" do
+      input = %{"in" => [4, [1, 2, 3]]}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      refute result
+    end
+
+    test "when haystack evaluates to a non-list number, should fail" do
+      input = %{"in" => [1, 5]}
+
+      assert_raise ArgumentError, fn -> OperationEvaluator.evaluate(nil, input) end
+    end
+
+    test "when haystack evaluates to a map, should fail" do
+      input = %{"in" => ["key", %{"key" => 1}]}
+
+      assert_raise ArgumentError, fn -> OperationEvaluator.evaluate(nil, input) end
+    end
+
+    test "when elements are of mixed types, should use equality semantics" do
+      input = %{"in" => [1, ["1", 1, true]]}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      assert result
+    end
+
+    test "when elements are of mixed types, should use equality semantics to refute" do
+      input = %{"in" => [2, ["1", 1, true]]}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      refute result
+    end
+
+    test "when composed from nested obj/plus expressions, should return correct result" do
+      input = %{
+        "in" => [
+          %{"plus" => [1, 1]},
+          %{"obj" => "data.more_data"}
+        ]
+      }
+
+      facts = %{"data" => %{"more_data" => [1, 2, 3]}}
+
+      result = OperationEvaluator.evaluate(facts, input)
+
+      assert result
+    end
+  end
+
+  describe "append operation" do
+    test "when appending to a non-empty list, should return the list with the value at the end" do
+      input = %{"append" => [[1, 2, 3], 4]}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      assert result === [1, 2, 3, 4]
+    end
+
+    test "when appending to an empty list, should return a single-element list" do
+      input = %{"append" => [[], 1]}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      assert result === [1]
+    end
+
+    test "when first argument evaluates to a non-list, should fail" do
+      input = %{"append" => [1, 2]}
+
+      assert_raise ArgumentError, fn -> OperationEvaluator.evaluate(nil, input) end
+    end
+
+    test "when composed with set, should return the modified facts" do
+      input = %{"set" => ["items", %{"append" => [%{"obj" => "items"}, 4]}]}
+      facts = %{"items" => [1, 2, 3]}
+
+      result = OperationEvaluator.evaluate(facts, input)
+
+      assert result === {:ok, %{"items" => [1, 2, 3, 4]}}
+    end
+
+    test "when called bare, should not modify the original facts" do
+      input = %{"append" => [%{"obj" => "items"}, 4]}
+      facts = %{"items" => [1, 2, 3]}
+
+      OperationEvaluator.evaluate(facts, input)
+
+      assert facts === %{"items" => [1, 2, 3]}
+    end
+  end
+
+  describe "len operation" do
+    test "when value is a list literal, should return its length" do
+      input = %{"len" => [1, 2, 3]}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      assert result === 3
+    end
+
+    test "when value is a list obtained via obj, should return its length" do
+      input = %{"len" => %{"obj" => "items"}}
+      facts = %{"items" => [1, 2, 3, 4]}
+
+      result = OperationEvaluator.evaluate(facts, input)
+
+      assert result === 4
+    end
+
+    test "when value is an empty list, should return 0" do
+      input = %{"len" => []}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      assert result === 0
+    end
+
+    test "when value is a string literal, should return its length" do
+      input = %{"len" => "hello"}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      assert result === 5
+    end
+
+    test "when value is a string obtained via obj, should return its length" do
+      input = %{"len" => %{"obj" => "name"}}
+      facts = %{"name" => "excanon"}
+
+      result = OperationEvaluator.evaluate(facts, input)
+
+      assert result === 7
+    end
+
+    test "when value is an empty string, should return 0" do
+      input = %{"len" => ""}
+
+      result = OperationEvaluator.evaluate(nil, input)
+
+      assert result === 0
+    end
+
+    test "when value is a map obtained via obj, should return its key count" do
+      input = %{"len" => %{"obj" => "data"}}
+      facts = %{"data" => %{"a" => 1, "b" => 2, "c" => 3}}
+
+      result = OperationEvaluator.evaluate(facts, input)
+
+      assert result === 3
+    end
+
+    test "when value is an empty map obtained via obj, should return 0" do
+      input = %{"len" => %{"obj" => "data"}}
+      facts = %{"data" => %{}}
+
+      result = OperationEvaluator.evaluate(facts, input)
+
+      assert result === 0
+    end
+
+    test "when value is an unsupported type, should fail with a descriptive message" do
+      input = %{"len" => 5}
+
+      assert_raise ArgumentError, "len requires a string, list, or map argument", fn ->
+        OperationEvaluator.evaluate(nil, input)
+      end
+    end
+
+    test "when value is a boolean, should fail with a descriptive message" do
+      input = %{"len" => true}
+
+      assert_raise ArgumentError, "len requires a string, list, or map argument", fn ->
+        OperationEvaluator.evaluate(nil, input)
+      end
+    end
+  end
+
   describe "log operation" do
     test "when message is a plain string, should log it and return it unchanged" do
       input = %{"log" => "checkpoint reached"}

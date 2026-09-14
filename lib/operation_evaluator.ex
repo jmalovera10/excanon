@@ -121,6 +121,31 @@ defmodule OperationEvaluator do
     end
   end
 
+  # Array/collection operators
+
+  def evaluate(facts, %{"in" => [member, collection]}) do
+    evaluated_collection = evaluate(facts, collection)
+
+    unless is_list(evaluated_collection) do
+      raise ArgumentError, "in requires a list as its second argument"
+    end
+
+    Enum.member?(evaluated_collection, evaluate(facts, member))
+  end
+
+  def evaluate(facts, %{"append" => [list, value]}) do
+    evaluate(facts, list) ++ [evaluate(facts, value)]
+  end
+
+  def evaluate(facts, %{"len" => arg}) do
+    case evaluate(facts, arg) do
+      val when is_list(val) -> length(val)
+      val when is_binary(val) -> String.length(val)
+      val when is_map(val) -> map_size(val)
+      _ -> raise ArgumentError, "len requires a string, list, or map argument"
+    end
+  end
+  
   # Logging
 
   def evaluate(facts, %{"log" => message}) do
