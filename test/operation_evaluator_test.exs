@@ -1,6 +1,8 @@
 defmodule OperationEvaluatorTest do
   use ExUnit.Case
 
+  import ExUnit.CaptureLog
+
   alias OperationEvaluator
 
   describe "eq operation" do
@@ -959,6 +961,118 @@ defmodule OperationEvaluatorTest do
       assert_raise ArgumentError, "len requires a string, list, or map argument", fn ->
         OperationEvaluator.evaluate(nil, input)
       end
+  end
+  
+  describe "log operation" do
+    test "when message is a plain string, should log it and return it unchanged" do
+      input = %{"log" => "checkpoint reached"}
+
+      log =
+        capture_log(fn ->
+          result = OperationEvaluator.evaluate(%{}, input)
+          assert result == "checkpoint reached"
+        end)
+
+      assert log =~ "checkpoint reached"
+    end
+
+    test "when message is a nested obj reference, should log and return the evaluated fact value unchanged" do
+      input = %{"log" => %{"obj" => "order.total"}}
+      facts = %{"order" => %{"total" => 100}}
+
+      log =
+        capture_log(fn ->
+          result = OperationEvaluator.evaluate(facts, input)
+          assert result === 100
+        end)
+
+      assert log =~ "100"
+    end
+
+    test "when message is a nested computed expression, should log and return the computed value" do
+      input = %{"log" => %{"plus" => [1, 2]}}
+
+      log =
+        capture_log(fn ->
+          result = OperationEvaluator.evaluate(%{}, input)
+          assert result === 3
+        end)
+
+      assert log =~ "3"
+    end
+
+    test "when evaluated value is not a binary, should log its inspected form but return the actual term" do
+      input = %{"log" => [1, 2]}
+
+      log =
+        capture_log(fn ->
+          result = OperationEvaluator.evaluate(%{}, input)
+          assert result === [1, 2]
+        end)
+
+      assert log =~ "[1, 2]"
+    end
+
+    test "when the nested message reference is invalid, should raise and log nothing" do
+      input = %{"log" => %{"obj" => "missing.path"}}
+
+      log =
+        capture_log(fn ->
+          assert_raise ArgumentError, fn -> OperationEvaluator.evaluate(%{}, input) end
+        end)
+
+      assert log == ""
+    end
+
+    test "when nested inside a comparison, should log the value without changing the comparison's result" do
+      input = %{"gt" => [%{"log" => %{"obj" => "x"}}, 5]}
+      facts = %{"x" => 10}
+
+      log =
+        capture_log(fn ->
+          result = OperationEvaluator.evaluate(facts, input)
+          assert result === true
+        end)
+
+      assert log =~ "10"
+    end
+
+    test "when used as a rule's top-level conditions, should fire identically to the equivalent rule without log" do
+      {:ok, _pid} = StatefulRuleEngine.start_link(:log_operation_test_engine, [])
+
+      rules_json = ~s([
+        {
+          "name": "logged_rule",
+          "description": "Fires when x equals 1, logging the decision along the way",
+          "conditions": {"log": {"eq": [{"obj": "x"}, 1]}},
+          "actions": [{"set": ["fired", true]}]
+        }
+      ])
+
+      :ok = StatefulRuleEngine.load_rules(:log_operation_test_engine, rules_json)
+
+      facts = %{"x" => 1}
+
+      log =
+        capture_log(fn ->
+          {:ok, result} = StatefulRuleEngine.evaluate(:log_operation_test_engine, facts)
+          assert result["fired"] == true
+        end)
+
+      assert log =~ "true"
+    end
+
+    test "when wrapping a set operation, should still update facts through the pass-through" do
+      input = %{"log" => %{"set" => ["x", 1]}}
+      facts = %{}
+
+      log =
+        capture_log(fn ->
+          result = OperationEvaluator.evaluate(facts, input)
+          assert result === {:ok, %{"x" => 1}}
+        end)
+
+      assert log =~ "{:ok, %{\"x\" => 1}}"
     end
   end
 

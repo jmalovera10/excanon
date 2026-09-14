@@ -2,6 +2,7 @@ defmodule OperationEvaluator do
   @moduledoc false
 
   alias JSONPointer
+  require Logger
 
   # Logic operators
   def evaluate(facts, %{"eq" => [head | tail] = data}) when is_list(data) do
@@ -144,6 +145,14 @@ defmodule OperationEvaluator do
       _ -> raise ArgumentError, "len requires a string, list, or map argument"
     end
   end
+  
+  # Logging
+
+  def evaluate(facts, %{"log" => message}) do
+    value = evaluate(facts, message)
+    value |> loggable() |> Logger.debug()
+    value
+  end
 
   # Constant assigments
 
@@ -153,6 +162,9 @@ defmodule OperationEvaluator do
   def evaluate(_, val) when is_list(val), do: val
   def evaluate(_, val) when is_nil(val), do: val
   def evaluate(_, _), do: raise(ArgumentError)
+
+  defp loggable(value) when is_binary(value), do: value
+  defp loggable(value), do: inspect(value)
 
   defp to_json_pointer(path) do
     array_reference_transformed = Regex.replace(~r/\[(\d+)\]/, path, "\.\\\1")

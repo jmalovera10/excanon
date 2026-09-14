@@ -169,6 +169,7 @@ Excanon supports a wide range of operations for building complex rules.
 | `set` | 2 | Set a value in facts at a given path | `{"set": ["order.total", 100]}` |
 | `call` | 1 | Execute an external Elixir script | `{"call": "path/to/script.exs"}` |
 
+
 ### Array Operations
 
 | Keyword | Arguments | Description | Example |
@@ -176,6 +177,20 @@ Excanon supports a wide range of operations for building complex rules.
 | `len` | 1 | Length of a string, list, or map | `{"len": {"obj": "order.items"}}` |
 | `append` | 2 | Returns a new list with a value appended to the end | `{"append": [{"obj": "order.items"}, new_item]}` |
 | `in` | 2 | Checks whether a value is a member of a list (use `has_key` for map key presence) | `{"in": [{"obj": "user.tier"}, ["gold", "platinum"]]}` |
+
+### Logging Operations
+
+| Keyword | Arguments | Description | Example |
+|---|---|---|---|
+| `log` | 1 | Logs an evaluated value at debug level via `Logger` and returns it unchanged (usable in `conditions` or `actions`) | `{"gt": [{"log": {"obj": "order.total"}}, 100]}` |
+
+> **Note:** `log` returns its argument's value unchanged after logging it, so it can be
+> wrapped around any part of a condition or action — including the entire `conditions`
+> expression — purely for debugging, without changing what the rule decides.
+>
+> `log` can reference arbitrary fact paths. Avoid logging sensitive fact values (PII,
+> credentials, etc.) — excanon has no way to know which fields are sensitive, and log
+> output inherits whatever `Logger` backends/retention the host application has configured.
 
 ### Constants
 
