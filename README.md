@@ -1,6 +1,6 @@
 # Excanon
 
-[![Build Status](https://github.com/yourusername/excanon/actions/workflows/ci.yml/badge.svg)](https://github.com/jmalovera10/excanon/actions)
+[![Build Status](https://github.com/jmalovera10/excanon/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/jmalovera10/excanon/actions)
 [![Hex.pm](https://img.shields.io/hexpm/v/excanon.svg)](https://hex.pm/packages/excanon)
 [![Documentation](https://img.shields.io/badge/docs-hexdocs-blue.svg)](https://hexdocs.pm/excanon)
 
@@ -306,8 +306,7 @@ Full API documentation is available on [HexDocs](https://hexdocs.pm/excanon).
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/excanon/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/excanon/discussions)
+- **Issues**: [GitHub Issues](https://github.com/jmalovera10/excanon/issues)
 
 ---
 
