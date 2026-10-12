@@ -19,7 +19,7 @@ Thank you for your interest in contributing to Excanon! We welcome bug reports, 
 ## Development Setup
 
 ```bash
-git clone https://github.com/yourusername/excanon.git
+git clone https://github.com/jmalovera10/excanon.git
 cd excanon
 mix deps.get
 ```
@@ -43,12 +43,13 @@ Please follow standard Elixir conventions and run `mix credo` to check for linti
 
 ## Reporting Security Issues
 
-If you discover a security vulnerability, please report it privately by opening an issue marked as confidential or contacting the maintainers directly.
+Please do not report security vulnerabilities in public issues. Follow the private reporting process described in [`SECURITY.md`](SECURITY.md).
 
 ## Additional Resources
 
 - `README.md` for usage examples
-- `CODE_OF_CONDUCT.md` for community expectations
+- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) for community expectations
+- [`SECURITY.md`](SECURITY.md) for reporting vulnerabilities
 - `CHANGELOG.md` for release history and version notes
 
 ## License
