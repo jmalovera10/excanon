@@ -17,7 +17,7 @@ Excanon is an Elixir library, published on Hex, that evaluates JSON-defined busi
 | Types | `mix dialyzer` |
 | Security scan | `mix sobelow --skip` |
 
-CI runs compile, test and dialyzer across the Elixir/OTP matrix in `.github/workflows/ci-workflow.yml`. Run the rest locally until CI enforces them.
+CI (`.github/workflows/ci-workflow.yml`) runs compile, test and dialyzer across the Elixir/OTP matrix, plus a quality job for format, credo, sobelow and the 90% coverage threshold. Run them locally before pushing.
 
 ## Who decides
 
@@ -78,7 +78,7 @@ Report what you ran and what it printed. Label every claim as **measured** (you 
 
 ## Work tracking
 
-The backlog lives in a private repository, `jmalovera10/excanon-backlog`. Proposals, specs and pipeline status stay there until the maintainer decides to make something public. Nothing from the private backlog is copied into this public repository unless the task says so.
+The backlog lives in a private repository, `jmalovera10/excanon-backlog`. Proposals, specs and pipeline status stay there until the maintainer decides to make something public. Nothing from the private backlog is copied into this public repository unless the task says so. Tickets, stage labels and transitions follow the [backlog protocol](.agents/backlog/README.md).
 
 ## Asking the maintainer
 
