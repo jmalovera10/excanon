@@ -36,9 +36,16 @@ def split_frontmatter(text, path):
     return meta, text[end + 5 :]
 
 
-def skill_file(meta, body, src):
-    head = f"---\nname: {meta['name']}\ndescription: {meta['description']}\n---\n"
-    return head + NOTICE.format(src=src) + body
+def skill_file(meta, body, src, role=False):
+    head = f"---\nname: {meta['name']}\ndescription: {meta['description']}\n"
+    if meta.get("invocation") == "manual":
+        head += "disable-model-invocation: true\n"
+    if "argument-hint" in meta:
+        head += f"argument-hint: {meta['argument-hint']}\n"
+    head += "---\n" + NOTICE.format(src=src)
+    if role:
+        body += "\n## Run input\n\n$ARGUMENTS\n"
+    return head + body
 
 
 def build(out):
@@ -59,7 +66,9 @@ def build(out):
         names[meta["name"]] = rel
         dest = out / meta["name"] / "SKILL.md"
         dest.parent.mkdir(parents=True)
-        dest.write_text(skill_file(meta, body, rel))
+        if meta.get("invocation", "manual") not in ("manual", "auto"):
+            sys.exit(f"{rel}: invocation must be manual or auto")
+        dest.write_text(skill_file(meta, body, rel, role=True))
 
     for skill_dir in sorted(p for p in (SOURCE / "skills").iterdir() if p.is_dir()):
         rel = skill_dir.relative_to(ROOT)

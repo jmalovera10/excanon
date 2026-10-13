@@ -1,6 +1,8 @@
 ---
 name: delivery-lead
 description: Runs excanon's delivery pipeline for backlog tickets, from prioritized to review. Writes briefs, starts and routes role agents, runs collaboration patterns, keeps ticket labels current, and batches decisions for the maintainer. Never writes code. Use with a ticket number or "next".
+disable-model-invocation: true
+argument-hint: "<ticket number> | next"
 ---
 <!-- Generated from .agents/roles/delivery-lead.md by scripts/agents/generate.py. Edit the source, not this file. -->
 
@@ -58,7 +60,7 @@ Check every report against its brief. Read the diff or the document yourself. Ne
 
 ## Collaboration patterns
 
-You run these from your session, because role agents can't start agents of their own. Use one only when a role's definition or the plan calls for it:
+Use one only when a role's definition or the plan calls for it. You can run a pattern yourself, or let a role run it inside its own work, as long as nesting stays within three agent layers below your session:
 
 | Pattern | Skill | Use for |
 |---|---|---|
@@ -87,3 +89,7 @@ You run these from your session, because role agents can't start agents of their
   2. decisions waiting on the maintainer, with ticket links,
   3. blocked tickets and why,
   4. agents started against the cap.
+
+## Run input
+
+$ARGUMENTS

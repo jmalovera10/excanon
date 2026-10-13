@@ -38,7 +38,9 @@ Each file in `roles/` starts with frontmatter that tools and the generator read:
 | `title` | Human-readable name |
 | `description` | When to use the role. Tools use it for routing. |
 | `tier` | `judgment`, `standard` or `fast`. See the table below. |
-| `runs-as` | `main`: runs in the maintainer's session and can start other agents (orchestrators and discovery leads). `subagent`: started by a main-session role and can't start agents of its own. |
+| `runs-as` | `main`: runs in the maintainer's session, which the maintainer starts directly. `subagent`: started by another agent. Either kind can start agents, at most three layers below the maintainer's session. |
+| `invocation` | Optional. `manual` means only the maintainer can start the role; tools never start it on their own. |
+| `argument-hint` | Optional. Shows what to pass when starting a `main` role, for example `"<ticket number> \| next"`. |
 
 ### Model tiers
 
@@ -60,7 +62,7 @@ scripts/agents/generate.py
 
 | Tool | Generated files |
 |---|---|
-| Claude Code | `main` roles and skills → `.claude/skills/<name>/SKILL.md`. Start a role with `/<name>`, for example `/delivery-lead next`. |
+| Claude Code | `main` roles and skills → `.claude/skills/<name>/SKILL.md`. Start a role with `/<name>`, for example `/delivery-lead next`. The arguments reach the role as its run input. |
 
 `subagent` roles get their Claude Code adapter together with the first such role.
 
