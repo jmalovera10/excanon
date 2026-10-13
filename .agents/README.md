@@ -19,18 +19,21 @@ CLAUDE.md                 Claude Code entry point; imports AGENTS.md
   README.md               this file
   policy/                 maintainer-owned rules (changes are high impact)
     impact.md             impact levels and high-impact triggers
+    product.md            product direction: users, goals, non-goals
   backlog/                backlog protocol and canonical label set
+  discovery/              discovery inputs, such as the benchmark engine list
   roles/                  one file per role: mission, inputs, outputs, limits
   skills/                 reusable procedures (SKILL.md folders)
-  workflows/              end-to-end flows across roles
+  workflows/              multi-role flows started by the maintainer (same frontmatter as main roles)
   templates/              handoff documents: proposal, spec, brief, report
 scripts/agents/           helper scripts: backlog label sync, adapter generator
 .claude/skills/           generated for Claude Code; never edit by hand
+.claude/agents/           generated for Claude Code; never edit by hand
 ```
 
 ## Role files
 
-Each file in `roles/` starts with frontmatter that tools and the generator read:
+Each file in `roles/` and `workflows/` starts with frontmatter that tools and the generator read:
 
 | Key | Meaning |
 |---|---|
@@ -41,6 +44,7 @@ Each file in `roles/` starts with frontmatter that tools and the generator read:
 | `runs-as` | `main`: runs in the maintainer's session, which the maintainer starts directly. `subagent`: started by another agent. Either kind can start agents, at most three layers below the maintainer's session. |
 | `invocation` | Optional. `manual` means only the maintainer can start the role; tools never start it on their own. |
 | `argument-hint` | Optional. Shows what to pass when starting a `main` role, for example `"<ticket number> \| next"`. |
+| `access` | Optional. `read-only` means the role must not edit repository files; its output goes to the backlog or its report. Defaults to `write`. |
 
 ### Model tiers
 
@@ -54,7 +58,7 @@ A `main` role runs on whatever model the maintainer's session uses. For it, the 
 
 ## Adapters
 
-Canonical files in `.agents/` are the only ones edited by hand. `scripts/agents/generate.py` produces tool-specific copies from them, and the `Agent definitions in sync` CI job fails when those copies drift. After editing anything under `.agents/roles/` or `.agents/skills/`, run:
+Canonical files in `.agents/` are the only ones edited by hand. `scripts/agents/generate.py` produces tool-specific copies from them, and the `Agent definitions in sync` CI job fails when those copies drift. After editing anything under `.agents/roles/`, `.agents/workflows/` or `.agents/skills/`, run:
 
 ```bash
 scripts/agents/generate.py
@@ -62,9 +66,7 @@ scripts/agents/generate.py
 
 | Tool | Generated files |
 |---|---|
-| Claude Code | `main` roles and skills → `.claude/skills/<name>/SKILL.md`. Start a role with `/<name>`, for example `/delivery-lead next`. The arguments reach the role as its run input. |
-
-`subagent` roles get their Claude Code adapter together with the first such role.
+| Claude Code | `main` roles, workflows and skills → `.claude/skills/<name>/SKILL.md`. Start one with `/<name>`, for example `/delivery-lead next` or `/discovery`. The arguments reach it as its run input. `subagent` roles → `.claude/agents/<name>.md`, with `model` mapped from the tier, and `read-only` access mapped to `disallowedTools: Edit, Write, NotebookEdit`. |
 
 
 ## Pipeline
