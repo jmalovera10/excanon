@@ -75,3 +75,10 @@ jobs:
       - name: Coverage (minimum 90%)
         if: ${{ !cancelled() }}
         run: mix test --cover
+
+  agents:
+    runs-on: ubuntu-24.04
+    name: "Agent definitions in sync"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: python3 scripts/agents/generate.py --check
