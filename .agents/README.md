@@ -32,8 +32,8 @@ scripts/agents/           helper scripts, e.g. backlog label sync
 
 ```
 Discovery ─► Proposal ─► [maintainer: prioritize]
-   ─► Spec + threat model ─► [maintainer: approve, if high impact]
-   ─► Test plan ─► Build ─► Verify (QA · Security · Review · API · Perf)
+   ─► Spec + test plan + threat model ─► [maintainer: approve, if high impact]
+   ─► Execution plan ─► Build ─► Verify (QA · Security · Review · API · Perf)
    ─► Pull request ─► [maintainer: approve + merge]
    ─► Release PR ─► [maintainer: tag + publish]
 ```

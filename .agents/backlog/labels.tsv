@@ -3,6 +3,7 @@ stage:proposal	c5def5	Refined proposal ready for prioritization
 stage:prioritized	0e8a16	Approved for work (maintainer only)
 stage:spec	1d76db	Spec, test plan and threat model in progress
 stage:spec-approved	0052cc	High-impact spec approved (maintainer only)
+stage:plan	006b75	Execution plan in progress: units, order, verification, PR slicing
 stage:build	5319e7	Implementation in progress
 stage:verify	fbca04	QA, security, review, API and performance checks
 stage:review	d93f0b	Public PR open, awaiting the maintainer

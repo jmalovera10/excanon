@@ -13,20 +13,21 @@ How agents and the maintainer track work in the private `jmalovera10/excanon-bac
 ## Ticket lifecycle
 
 ```
-idea ──► proposal ──► [M] prioritized ──► spec ──► [M] spec-approved ──► build ──► verify ──► review ──► [M] closed
+idea ──► proposal ──► [M] prioritized ──► spec ──► [M] spec-approved ──► plan ──► build ──► verify ──► review ──► [M] closed
                  └──► [M] closed (declined)          (high impact only)
 ```
 
-`[M]` marks a transition that only the maintainer makes. A standard or trivial ticket goes straight from `spec` to `build`.
+`[M]` marks a transition that only the maintainer makes. A standard or trivial ticket goes straight from `spec` to `plan`.
 
 | Stage label | Meaning | Who sets it | Next |
 |---|---|---|---|
 | `stage:idea` | Raw idea from discovery, not yet refined | Product Lead, Staff Engineer, Triage, Retro, maintainer | `proposal` |
 | `stage:proposal` | Refined proposal, ready for prioritization | Product Lead, Staff Engineer (after Scope Review) | `prioritized` or closed |
 | `stage:prioritized` | Approved for work | **Maintainer only** | `spec` |
-| `stage:spec` | Spec, test plan and threat model in progress | Delivery Lead | `spec-approved` (high impact) or `build` |
-| `stage:spec-approved` | High-impact spec approved | **Maintainer only** | `build` |
-| `stage:build` | Implementation in progress | Delivery Lead | `verify` |
+| `stage:spec` | Spec, test plan and threat model in progress | Delivery Lead | `spec-approved` (high impact) or `plan` |
+| `stage:spec-approved` | High-impact spec approved | **Maintainer only** | `plan` |
+| `stage:plan` | Execution plan in progress: work units, order, parallel streams, verification, PR slicing | Delivery Lead | `build` |
+| `stage:build` | Implementation in progress, following the plan | Delivery Lead | `verify` |
 | `stage:verify` | QA, Security, Review, API and Performance checks | Delivery Lead | `review` or back to `build` |
 | `stage:review` | Public PR open, awaiting the maintainer | Delivery Lead | closed when merged |
 
@@ -36,7 +37,8 @@ Rules:
 2. **Agents never set `stage:prioritized` or `stage:spec-approved`,** and never close a ticket as declined. Those transitions are the maintainer's decisions.
 3. **A ticket closes when its PR merges,** or when the maintainer declines it. Agents close a ticket only after confirming its PR was merged.
 4. **Going backwards is allowed.** For example, `verify` returns to `build` when a check fails. Leave a comment saying why.
-5. **High impact found mid-build:** if building uncovers a high-impact trigger, the ticket returns to `stage:spec` with `impact:high`, and work stops until the spec is approved.
+5. **High impact found later:** if planning or building uncovers a high-impact trigger, the ticket returns to `stage:spec` with `impact:high`, and work stops until the spec is approved.
+6. **No build without a plan.** The plan is posted on the ticket before `stage:build`, and builders work only from its units. If reality diverges from the plan, the ticket returns to `stage:plan` and the plan is updated first.
 
 ## Other labels
 
@@ -75,7 +77,7 @@ Tickets are created from these templates. Each heading must be filled in, or mar
 - [Bug](../templates/bug.md): `type:bug`.
 - [Decision request](../templates/decision-request.md): a comment format, not a ticket.
 
-Specs, test plans and threat models arrive with the build roles.
+The execution plan template arrives with the Delivery Lead. Specs, test plans and threat models arrive with the build roles.
 
 ## Following the board
 
