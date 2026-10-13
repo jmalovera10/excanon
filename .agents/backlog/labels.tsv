@@ -1,0 +1,40 @@
+stage:idea	ededed	Raw idea from discovery, not yet refined
+stage:proposal	c5def5	Refined proposal ready for prioritization
+stage:prioritized	0e8a16	Approved for work (maintainer only)
+stage:spec	1d76db	Spec, test plan and threat model in progress
+stage:spec-approved	0052cc	High-impact spec approved (maintainer only)
+stage:build	5319e7	Implementation in progress
+stage:verify	fbca04	QA, security, review, API and performance checks
+stage:review	d93f0b	Public PR open, awaiting the maintainer
+type:feature	a2eeef	User-facing capability
+type:tech	bfd4f2	Technical enhancement, refactor, upgrade or debt
+type:bug	d73a4a	Defect against documented behavior
+type:docs	0075ca	Documentation only
+type:chore	cfd3d7	Maintenance with no behavior change
+impact:trivial	c2e0c6	No effect on behavior, API or dependencies
+impact:standard	fef2c0	Internal change within the public contract
+impact:high	b60205	Matches a high-impact trigger; spec needs maintainer approval
+priority:high	b60205	Maintainer priority: high
+priority:medium	fbca04	Maintainer priority: medium
+priority:low	c2e0c6	Maintainer priority: low
+from:product	f9d0c4	Originated from the Product Lead
+from:staff	f9d0c4	Originated from the Staff Engineer
+from:triage	f9d0c4	Originated from Triage
+from:retro	f9d0c4	Originated from Retro
+from:maintainer	f9d0c4	Originated from the maintainer
+role:product-lead	e4e669	Owned by the Product Lead
+role:staff-engineer	e4e669	Owned by the Staff Engineer
+role:scope-reviewer	e4e669	Owned by the Scope Reviewer
+role:architect	e4e669	Owned by the Architect
+role:api-steward	e4e669	Owned by the API Compatibility Steward
+role:developer	e4e669	Owned by the Elixir Developer
+role:qa	e4e669	Owned by the QA Engineer
+role:security	e4e669	Owned by the Security Engineer
+role:reviewer	e4e669	Owned by the Code Reviewer
+role:performance	e4e669	Owned by the Performance Engineer
+role:release	e4e669	Owned by the Release Engineer
+role:ci-doctor	e4e669	Owned by the CI Doctor
+role:bug-investigator	e4e669	Owned by the Bug Investigator
+role:docs	e4e669	Owned by the Docs Writer
+needs:maintainer	d93f0b	Waiting on a maintainer decision
+blocked	000000	Cannot progress; see latest comment

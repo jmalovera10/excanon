@@ -19,10 +19,12 @@ CLAUDE.md                 Claude Code entry point; imports AGENTS.md
   README.md               this file
   policy/                 maintainer-owned rules (changes are high impact)
     impact.md             impact levels and high-impact triggers
+  backlog/                backlog protocol and canonical label set
   roles/                  one file per role: mission, inputs, outputs, limits
   skills/                 reusable procedures (SKILL.md folders)
   workflows/              end-to-end flows across roles
   templates/              handoff documents: proposal, spec, brief, report
+scripts/agents/           helper scripts, e.g. backlog label sync
 ```
 
 
@@ -36,7 +38,7 @@ Discovery ─► Proposal ─► [maintainer: prioritize]
    ─► Release PR ─► [maintainer: tag + publish]
 ```
 
-Work state lives as labeled issues in the private `jmalovera10/excanon-backlog` repository. The maintainer follows it on a GitHub Projects board.
+Work state lives as labeled issues in the private `jmalovera10/excanon-backlog` repository, following the [backlog protocol](backlog/README.md). The maintainer follows it on a GitHub Projects board.
 
 ## Roles
 
