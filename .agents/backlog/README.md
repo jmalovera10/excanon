@@ -50,6 +50,7 @@ Rules:
 | **Source** (exactly one) | `from:product`, `from:staff`, `from:triage`, `from:retro`, `from:maintainer` | The role that creates the ticket |
 | **Owner** (at most one) | `role:<role-name>`, for example `role:architect` | Delivery Lead, when it hands work over |
 | **Flags** | `needs:maintainer`, `blocked` | Any agent; the maintainer clears `needs:maintainer` when answering |
+| **Reports** | `report`: a periodic report such as a discovery report. Not a work ticket, so it has no stage. | The workflow that posts it, which also closes the previous report |
 
 `labels.tsv` holds the canonical list. To create or update the labels in the backlog repository, run [`scripts/agents/sync-backlog-labels.sh`](../../scripts/agents/sync-backlog-labels.sh).
 

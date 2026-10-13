@@ -37,5 +37,6 @@ role:release	e4e669	Owned by the Release Engineer
 role:ci-doctor	e4e669	Owned by the CI Doctor
 role:bug-investigator	e4e669	Owned by the Bug Investigator
 role:docs	e4e669	Owned by the Docs Writer
+report	bfdadc	Discovery or health report, not a work ticket
 needs:maintainer	d93f0b	Waiting on a maintainer decision
 blocked	000000	Cannot progress; see latest comment
