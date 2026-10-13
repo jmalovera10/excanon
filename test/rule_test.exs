@@ -17,28 +17,34 @@ defmodule RuleTest do
       assert result === %Rule{name: "test", description: "test", conditions: %{}, actions: [%{}]}
     end
 
-    test "when missing name, should fail" do
-      input = %{"name" => nil}
+    for {field, message} <- [
+          {"name", "Name field is required"},
+          {"description", "Description field is required"},
+          {"conditions", "Conditions field is required"},
+          {"actions", "Actions field is required"}
+        ] do
+      test "when #{field} is missing, should fail with #{inspect(message)}" do
+        input = Map.delete(valid_params(), unquote(field))
 
-      assert_raise ArgumentError, fn -> Rule.new!(input) end
+        assert_raise ArgumentError, unquote(message), fn -> Rule.new!(input) end
+      end
     end
 
-    test "when missing description, should fail" do
-      input = %{"description" => nil}
+    for {field, invalid_value, message} <- [
+          {"name", nil, "Name field is required"},
+          {"name", 42, "Name field is required"},
+          {"description", nil, "Description field is required"},
+          {"description", 42, "Description field is required"},
+          {"conditions", nil, "Conditions field is required"},
+          {"conditions", [], "Conditions field is required"},
+          {"actions", nil, "Actions field is required"},
+          {"actions", %{}, "Actions field is required"}
+        ] do
+      test "when #{field} is #{inspect(invalid_value)}, should fail with #{inspect(message)}" do
+        input = Map.put(valid_params(), unquote(field), unquote(Macro.escape(invalid_value)))
 
-      assert_raise ArgumentError, fn -> Rule.new!(input) end
-    end
-
-    test "when missing conditions, should fail" do
-      input = %{"conditions" => nil}
-
-      assert_raise ArgumentError, fn -> Rule.new!(input) end
-    end
-
-    test "when missing actions, should fail" do
-      input = %{"actions" => nil}
-
-      assert_raise ArgumentError, fn -> Rule.new!(input) end
+        assert_raise ArgumentError, unquote(message), fn -> Rule.new!(input) end
+      end
     end
 
     test "when after is a valid list of strings, should create Rule with it set" do
@@ -170,5 +176,14 @@ defmodule RuleTest do
 
       assert_raise ArgumentError, fn -> Rule.new!(input) end
     end
+  end
+
+  defp valid_params do
+    %{
+      "name" => "test",
+      "description" => "test",
+      "conditions" => %{},
+      "actions" => [%{}]
+    }
   end
 end

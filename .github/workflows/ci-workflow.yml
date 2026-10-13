@@ -53,3 +53,25 @@ jobs:
       - run: mix compile --warnings-as-errors
       - run: mix test
       - run: mix dialyzer --halt-exit-status
+
+  quality:
+    runs-on: ubuntu-24.04
+    name: "Quality gates"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+        with:
+          otp-version: "28.1"
+          elixir-version: "1.19.5"
+      - run: mix deps.get
+      - name: Format
+        run: mix format --check-formatted
+      - name: Credo
+        if: ${{ !cancelled() }}
+        run: mix credo --strict
+      - name: Sobelow
+        if: ${{ !cancelled() }}
+        run: mix sobelow --skip --exit low
+      - name: Coverage (minimum 90%)
+        if: ${{ !cancelled() }}
+        run: mix test --cover

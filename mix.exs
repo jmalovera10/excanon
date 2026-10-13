@@ -10,7 +10,8 @@ defmodule Excanon.MixProject do
       description:
         "A flexible rule engine library for Elixir that allows you to define and execute business rules using JSON-based configurations.",
       package: package(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [summary: [threshold: 90]]
     ]
   end
 
