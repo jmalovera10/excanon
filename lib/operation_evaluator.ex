@@ -104,7 +104,9 @@ defmodule OperationEvaluator do
     end
   end
 
-  # Script caller
+  # Script caller. Executing code is this operation's purpose; rules using it must
+  # come from trusted sources (see SECURITY.md).
+  # sobelow_skip ["RCE.CodeModule"]
   def evaluate(_, %{"call" => file}) when is_binary(file) do
     {result, _} = Code.eval_file(file)
     result
