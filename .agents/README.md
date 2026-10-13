@@ -20,13 +20,15 @@ CLAUDE.md                 Claude Code entry point; imports AGENTS.md
   policy/                 maintainer-owned rules (changes are high impact)
     impact.md             impact levels and high-impact triggers
     product.md            product direction: users, goals, non-goals
+    versioning.md         public contract, semantic versioning, deprecation
   backlog/                backlog protocol and canonical label set
   discovery/              discovery inputs, such as the benchmark engine list
   roles/                  one file per role: mission, inputs, outputs, limits
   skills/                 reusable procedures (SKILL.md folders)
   workflows/              multi-role flows started by the maintainer (same frontmatter as main roles)
   templates/              handoff documents: proposal, spec, brief, report
-scripts/agents/           helper scripts: backlog label sync, adapter generator
+scripts/agents/           helper scripts: backlog label sync, adapter generator, public API diff
+docs/adr/                 architecture decision records, published with the changes they describe
 .claude/skills/           generated for Claude Code; never edit by hand
 .claude/agents/           generated for Claude Code; never edit by hand
 ```
