@@ -24,8 +24,45 @@ CLAUDE.md                 Claude Code entry point; imports AGENTS.md
   skills/                 reusable procedures (SKILL.md folders)
   workflows/              end-to-end flows across roles
   templates/              handoff documents: proposal, spec, brief, report
-scripts/agents/           helper scripts, e.g. backlog label sync
+scripts/agents/           helper scripts: backlog label sync, adapter generator
+.claude/skills/           generated for Claude Code; never edit by hand
 ```
+
+## Role files
+
+Each file in `roles/` starts with frontmatter that tools and the generator read:
+
+| Key | Meaning |
+|---|---|
+| `name` | Identifier, matching the file name |
+| `title` | Human-readable name |
+| `description` | When to use the role. Tools use it for routing. |
+| `tier` | `judgment`, `standard` or `fast`. See the table below. |
+| `runs-as` | `main`: runs in the maintainer's session and can start other agents (orchestrators and discovery leads). `subagent`: started by a main-session role and can't start agents of its own. |
+
+### Model tiers
+
+| Tier | For | Claude Code model |
+|---|---|---|
+| `judgment` | Orchestration, architecture, review, security, and judges in collaboration patterns | `opus` |
+| `standard` | Implementation, research, test writing | `sonnet` |
+| `fast` | Mechanical work: label updates, log reading, formatting | `haiku` |
+
+A `main` role runs on whatever model the maintainer's session uses. For it, the tier is a recommendation.
+
+## Adapters
+
+Canonical files in `.agents/` are the only ones edited by hand. `scripts/agents/generate.py` produces tool-specific copies from them, and the `Agent definitions in sync` CI job fails when those copies drift. After editing anything under `.agents/roles/` or `.agents/skills/`, run:
+
+```bash
+scripts/agents/generate.py
+```
+
+| Tool | Generated files |
+|---|---|
+| Claude Code | `main` roles and skills → `.claude/skills/<name>/SKILL.md`. Start a role with `/<name>`, for example `/delivery-lead next`. |
+
+`subagent` roles get their Claude Code adapter together with the first such role.
 
 
 ## Pipeline
