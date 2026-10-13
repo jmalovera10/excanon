@@ -100,7 +100,8 @@ defmodule RuleGraph do
       {{_index, next_name}, remaining_ready} = :gb_sets.take_smallest(ready)
       in_degree = Map.delete(in_degree, next_name)
 
-      {in_degree, ready} = update_in_degree(adjacency, in_degree, remaining_ready, meta_by_name, next_name)
+      {in_degree, ready} =
+        update_in_degree(adjacency, in_degree, remaining_ready, meta_by_name, next_name)
 
       kahn_sort(adjacency, in_degree, meta_by_name, ready, [
         rule_of(meta_by_name, next_name) | acc
