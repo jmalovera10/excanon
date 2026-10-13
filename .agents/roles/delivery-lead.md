@@ -39,10 +39,10 @@ Each stage label means that stage's work is **in progress**. For the current lab
 | Current label | Work | Roles | Done when | Next label |
 |---|---|---|---|---|
 | `stage:prioritized` | None, just start | none | Immediately | `stage:spec` |
-| `stage:spec` | Spec, test plan, threat model, impact level | The Architect writes the spec first. Then, in parallel: QA writes the test plan, Security writes the threat model, and the API Steward and Security check the impact level. | All four are posted and the checkers agree on the impact level | `impact:high`: post a decision request, add `needs:maintainer`, and leave the ticket for the maintainer to set `stage:spec-approved`. Otherwise: `stage:plan`. |
+| `stage:spec` | Spec, test plan, threat model, impact level and version bump | The Architect writes the spec first (`.agents/templates/spec.md`). Then, in parallel: QA writes the test plan (`test-plan.md`), Security writes the threat model (`threat-model.md`), and the API Steward and Security check the impact level and version bump. | All four are posted and the checkers agree on the impact level | `impact:high`: post a decision request, add `needs:maintainer`, and leave the ticket for the maintainer to set `stage:spec-approved`. Otherwise: `stage:plan`. |
 | `stage:spec-approved` | None, just continue | none | Immediately | `stage:plan` |
 | `stage:plan` | Write the execution plan from `.agents/templates/plan.md` | The Architect and QA validate it **independently**, in separate fresh contexts | Both report PASS. At most two rounds of fixes, then escalate. | `stage:build` |
-| `stage:build` | Implement the plan's units in order, one worktree per stream | The Developer, one brief per unit | Every unit reports PASS with its verify output | `stage:verify` |
+| `stage:build` | Implement the plan's units in order, one worktree per stream, tests first | The Developer, one brief per unit, on the unit's tier: `standard` by default, `judgment` for units the plan marks as hard | Every unit reports PASS with its verify output, and its tests-first commit precedes the implementation | `stage:verify` |
 | `stage:verify` | Independent checks | QA and the Code Reviewer always. Security, the API Steward and Performance when the plan marks them relevant. | All PASS: open the PR. Any ISSUES: back to `stage:build` with the findings. | `stage:review` |
 | `stage:review` | Wait for the maintainer | Route the maintainer's PR comments to the role that owns the code | The maintainer merged the PR: confirm the merge, then close the ticket | closed |
 
