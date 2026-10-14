@@ -30,7 +30,7 @@ A change is high impact if it does **any** of the following:
 
 1. **Changes the public API or documented behavior.** That means adding, removing or renaming a public module, function or option; changing a `@spec`; changing an error tuple; or changing what a rule, operation or JSON field means.
 2. **Breaks compatibility** for existing users, including dropping an Elixir or OTP version.
-3. **Adds or replaces a dependency** of any kind, including dev-only and test-only ones.
+3. **Adds or replaces a dependency** of any kind, including dev-only and test-only ones, unless it's listed under [Pre-approved dependencies](#pre-approved-dependencies).
 4. **Redesigns core functionality:** rule evaluation, rule ordering and dependencies (`rule_graph`), operation dispatch, or the stateful engine's process model.
 5. **Touches code execution:** the `call` operation, `Code.eval_*`, or anything that loads or runs code chosen by a rule.
 6. **Changes CI or automation permissions:** workflow permissions, secrets usage, environments or triggers.
@@ -53,8 +53,17 @@ A change is high impact if it does **any** of the following:
 3. Changes to this file are always high impact (trigger 7), so only the maintainer can approve them.
 4. Each change is recorded below.
 
+## Pre-approved dependencies
+
+Dependencies the maintainer has already approved. Adding one of these is not a high-impact trigger by itself. The change that adds it is classified on its other merits.
+
+| Dependency | Scope | Approved for | Date |
+|---|---|---|---|
+| `benchee` | `only: [:dev, :test]`, `runtime: false` | Performance benchmarks | 2026-10-14 |
+
 ## Change log
 
 | Date | Change | PR |
 |---|---|---|
-| 2026-10-12 | Initial policy | (this PR) |
+| 2026-10-12 | Initial policy | #14 |
+| 2026-10-14 | Pre-approve `benchee` as a dev and test dependency | (PR 7) |
