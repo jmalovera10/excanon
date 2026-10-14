@@ -12,9 +12,11 @@ Fill in every section, or write "n/a: <reason>".
 
 Each unit is the smallest change that ends in a check.
 
-| # | Unit | Files | Depends on | Verify |
-|---|---|---|---|---|
-| 1 | | | — | `<command>` |
+| # | Unit | Files | Depends on | Tier | Verify |
+|---|---|---|---|---|---|
+| 1 | | | — | standard | `<command>` |
+
+**Tier** is `standard` by default. Mark a unit `judgment` when it touches core evaluation, ordering, concurrency or code execution, or when the spec flags it as subtle.
 
 ### Order and parallel streams
 

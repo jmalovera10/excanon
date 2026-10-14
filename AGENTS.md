@@ -4,7 +4,7 @@ Rules for every AI agent working on excanon, whatever tool runs it. Role definit
 
 ## The project
 
-Excanon is an Elixir library, published on Hex, that evaluates JSON-defined business rules. People install it as a dependency, so its public API, its documented behavior and its error tuples are a contract with every app that uses it.
+Excanon is an Elixir library, published on Hex, that evaluates JSON-defined business rules. People install it as a dependency, so its public API, its documented behavior and its error tuples are a contract with every app that uses it. [`.agents/policy/versioning.md`](.agents/policy/versioning.md) defines that contract and how versions and deprecations work.
 
 | Task | Command |
 |---|---|
