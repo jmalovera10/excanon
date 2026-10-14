@@ -75,6 +75,9 @@ jobs:
       - name: Coverage (minimum 90%)
         if: ${{ !cancelled() }}
         run: mix test --cover
+      - name: Hex audit (retired dependencies)
+        if: ${{ !cancelled() }}
+        run: mix hex.audit
 
   agents:
     runs-on: ubuntu-24.04

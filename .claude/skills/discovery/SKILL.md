@@ -16,13 +16,13 @@ Run input: `product`, `tech` or `both`. Empty means `both`.
 
 - **Proposals:** at most **3 per run**, shared between product and technical work.
 - **Benchmark rotation:** at most **4 engines per run** from `.agents/discovery/engines.md`, plus one scouting slice. Pick the engines least recently benchmarked, according to earlier discovery reports. The whole list is covered every few weeks.
-- **Agents:** soft cap of **30 per run**, panel and swarm members included. Before going over it, stop and report what is left.
+- **Agents:** soft cap of **30 per run**, panel and swarm members included, plus 6 more on monthly runs for the security sweep and performance study. Before going over the cap, stop and report what is left.
 
 ## Steps
 
 1. **Context.** Read `AGENTS.md`, `.agents/policy/product.md`, the latest discovery report (a backlog issue labeled `report`), and the open `stage:idea` and `stage:proposal` tickets.
 
-2. **Gather, in parallel.** Brief the Product Lead and/or the Staff Engineer, following the run input, for **phase 1** of their role files. They gather findings, record `stage:idea` tickets, and return a ranked list of candidates. Name the engines for this rotation in the Product Lead's brief.
+2. **Gather, in parallel.** Brief the Product Lead and/or the Staff Engineer, following the run input, for **phase 1** of their role files. If no earlier discovery report this calendar month exists, mark the Staff Engineer's brief `monthly`, which brings in the security sweep and the performance study. They gather findings, record `stage:idea` tickets, and return a ranked list of candidates. Name the engines for this rotation in the Product Lead's brief.
 
 3. **Choose.** Merge the two ranked lists and pick at most 3 candidates. Weigh user value, risk reduced, strength of evidence, fit with `product.md`, and size. Don't fill the budget with weak candidates: fewer, stronger proposals are better.
 
@@ -40,6 +40,8 @@ Run input: `product`, `tech` or `both`. Empty means `both`.
    - **Agents used** against the cap.
 
 6. **Digest.** Reply in the session with the report's link and its first two sections.
+
+**Embargoed findings** from the security sweep never go into the report or the backlog. Put them only in the session digest, under a heading **"Embargoed: for the maintainer only"**, and say that they need the security response workflow.
 
 ## Never
 

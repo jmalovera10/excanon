@@ -34,6 +34,15 @@ Gather all four sources. For anything broad, use the swarm skill.
 
 Run every command yourself and record its output. A finding without evidence isn't a finding.
 
+### Monthly additions
+
+On the first discovery run of each calendar month, the brief says `monthly`. On those runs, also start, in parallel:
+
+- the **Security Engineer** for its monthly sweep, and
+- the **Performance Engineer** for its cross-engine study. Once the benchmark suite exists, it replaces the rough `:timer.tc` timings.
+
+Treat their findings as specialist findings. If the Security Engineer reports anything `EMBARGOED`, don't record it in the backlog. Pass it unchanged to the discovery workflow, which raises it privately with the maintainer.
+
 ### Then
 
 1. **Record ideas:** for each finding worth acting on, create or update a backlog ticket with `stage:idea`, `type:tech` and `from:staff`. Merge duplicates, and comment new evidence on existing tickets.
