@@ -21,3 +21,6 @@ excanon-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Embargoed security work. Never commit; see .agents/roles/security-response.md.
+/.embargo/

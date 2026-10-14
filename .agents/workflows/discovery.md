@@ -43,7 +43,7 @@ Run input: `product`, `tech` or `both`. Empty means `both`.
 
 6. **Digest.** Reply in the session with the report's link and its first two sections.
 
-**Embargoed findings** from the security sweep never go into the report or the backlog. Put them only in the session digest, under a heading **"Embargoed: for the maintainer only"**, and say that they need the security response workflow.
+**Embargoed findings** from the security sweep never go into the report or the backlog. Put them only in the session digest, under a heading **"Embargoed: for the maintainer only"**, and tell the maintainer to save each finding to a local file and run `/security-response <file>` on their machine.
 
 ## Never
 

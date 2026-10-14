@@ -54,7 +54,7 @@ If you find an exploitable vulnerability in released code, at any stage:
 
 1. **Stop.** Don't put details in the ticket, the PR, a commit, a branch name or any public place.
 2. Report it **only** in your report to the agent that started you, marked `EMBARGOED`. The workflow then raises it to the maintainer privately.
-3. It is then handled by the security response workflow.
+3. The maintainer then handles it by starting `/security-response` on their machine, which is described in `.agents/roles/security-response.md`.
 
 ## Report
 
