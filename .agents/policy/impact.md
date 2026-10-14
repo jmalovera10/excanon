@@ -66,4 +66,4 @@ Dependencies the maintainer has already approved. Adding one of these is not a h
 | Date | Change | PR |
 |---|---|---|
 | 2026-10-12 | Initial policy | #14 |
-| 2026-10-14 | Pre-approve `benchee` as a dev and test dependency | (PR 7) |
+| 2026-10-14 | Pre-approve `benchee` as a dev and test dependency | #21 |
