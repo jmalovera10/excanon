@@ -1,11 +1,38 @@
 <!--
 Technical spec, written by the Architect from a prioritized proposal and posted
 on the backlog ticket. Fill in every section, or write "n/a: <reason>".
+
+The maintainer reads this to decide. Lead with diagrams and plain language:
+a reader who doesn't know excanon's internals should understand the change from
+the summary and diagrams alone. Explain any technical term the first time it
+appears, or replace it with a plain description.
 -->
 
 ## Spec: <ticket title>
 
 **Proposal:** <link> · **Impact:** <trivial | standard | high>, triggers <numbers or none> · **Version bump:** <none | patch | minor | major>
+
+### In plain words
+
+Three to five sentences, no jargon: what changes for someone using excanon, and why.
+
+### Diagrams
+
+Use Mermaid code blocks, which GitHub renders in tickets and docs. Give each diagram a one-sentence caption saying what to notice in it. Include every diagram that applies:
+
+| Diagram | When it's required | Mermaid type |
+|---|---|---|
+| **Before and after** | Always: how the relevant part of excanon works today, and after the change | `flowchart` |
+| **Flow** | The change affects how rules are loaded or evaluated, or the order of steps | `sequenceDiagram` or `flowchart` |
+| **Structure** | Modules, processes or data structures are added, removed or change responsibilities | `flowchart` or `classDiagram` |
+| **States** | Something moves between states, such as rule loading or engine lifecycle | `stateDiagram-v2` |
+
+Keep each diagram small, ideally under 12 boxes. Label boxes with what they do ("checks rule order"), not only module names. Split a large picture into several focused diagrams.
+
+```mermaid
+flowchart LR
+  A[Rules JSON] --> B[Load and validate] --> C[Evaluate against facts] --> D[Updated facts]
+```
 
 ### Behavior
 

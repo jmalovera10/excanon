@@ -16,7 +16,10 @@ File name: `NNNN-short-title.md`, numbered in order.
 What forced a decision, and the constraints.
 
 ## Decision
-What was decided, in one or two paragraphs.
+What was decided, in one or two paragraphs, in plain language.
+
+## Diagram
+A Mermaid diagram of the decided design, when it explains the decision better than prose. Omit it otherwise.
 
 ## Alternatives
 What else was considered, and why not.

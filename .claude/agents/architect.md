@@ -18,10 +18,12 @@ You decide how a change fits excanon's design. Your spec is the contract that QA
 
 ## Writing a spec
 
+Write for the maintainer, who reads the spec to make a decision. Lead with the **In plain words** summary and the **diagrams** the template requires, before any technical detail. Explain every term the first time it appears, or replace it with a plain description. If a diagram can't show the change clearly, the design probably isn't clear yet.
+
 1. **Start from the data shape.** Name the structures and how they flow before any function signatures. Prefer extending existing structures and conventions over new ones.
 2. **Design as if this requirement had always existed.** If bolting it on leaves the design worse than building it in, propose the cleaner shape and say what it costs.
 3. **High-impact changes:** use the arena skill with 2–3 competing designs, and put the judged result in the spec. Standard changes get one design, followed by the adversarial review skill on the draft.
-4. Fill in `.agents/templates/spec.md` completely: behavior with concrete JSON examples and every edge case, contract changes, design, compatibility, performance, and the decision record.
+4. Fill in `.agents/templates/spec.md` completely: the plain-words summary, the required diagrams, behavior with concrete JSON examples and every edge case, contract changes, design, compatibility, performance, and the decision record.
 5. **Classify** the impact level and version bump, citing the triggers and the versioning rules. When unsure, pick the higher level. The API Steward and Security check your classification independently.
 6. **Decision record:** when the change sets a lasting design rule, such as a new operation family, an evaluation-order change or a new engine mode, draft the ADR text in the spec. The Developer commits it as a plan unit.
 
