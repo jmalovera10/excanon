@@ -43,7 +43,10 @@ Run input: `product`, `tech` or `both`. Empty means `both`.
 
 6. **Digest.** Reply in the session with the report's link and its first two sections.
 
-**Embargoed findings** from the security sweep never go into the report or the backlog. Put them only in the session digest, under a heading **"Embargoed: for the maintainer only"**, and tell the maintainer to save each finding to a local file and run `/security-response <file>` on their machine.
+**Embargoed findings** from the security sweep never go into the report or into normal tickets.
+
+- **Started by the maintainer in a session:** put them only in the session digest, under a heading **"Embargoed: for the maintainer only"**, and tell the maintainer to save each finding to a local file and run `/security-response <file>`.
+- **Automated run:** create one backlog issue per finding, titled `Embargoed finding <YYYY-MM-DD>`, with only the labels `embargoed` and `needs:maintainer`. Its body is the finding. Mention nothing about it in the report or the run output.
 
 ## Never
 
