@@ -41,8 +41,8 @@ Each stage label means that stage's work is **in progress**. For the current lab
 | `stage:spec-approved` | None, just continue | none | Immediately | `stage:plan` |
 | `stage:plan` | Write the execution plan from `.agents/templates/plan.md` | The Architect and QA validate it **independently**, in separate fresh contexts | Both report PASS. At most two rounds of fixes, then escalate. | `stage:build` |
 | `stage:build` | Implement the plan's units in order, one worktree per stream, tests first | The Developer, one brief per unit, on the unit's tier: `standard` by default, `judgment` for units the plan marks as hard | Every unit reports PASS with its verify output, and its tests-first commit precedes the implementation | `stage:verify` |
-| `stage:verify` | Independent checks, in fresh contexts | QA and the Code Reviewer always (the Reviewer runs an adversarial review for `impact:high`). Security, the API Steward and Performance when the plan marks them relevant. | All PASS: open the PR, and post the Code Reviewer's summary on it as a comment. Any ISSUES: back to `stage:build` with the findings. | `stage:review` |
-| `stage:review` | Wait for the maintainer | Route the maintainer's PR comments to the role that owns the code | The maintainer merged the PR: confirm the merge, then close the ticket | closed |
+| `stage:verify` | Independent checks, in fresh contexts | QA and the Code Reviewer always (the Reviewer runs an adversarial review for `impact:high`). The Docs Writer when public behavior or docs change. Security, the API Steward and Performance when the plan marks them relevant. | All PASS: open the PR, and post the Code Reviewer's summary on it as a comment. Any ISSUES: back to `stage:build` with the findings. | `stage:review` |
+| `stage:review` | Wait for the maintainer | Route the maintainer's PR comments to the role that owns the code | The maintainer merged the PR: confirm the merge, close the ticket, and list it in the digest as ready for `/retro <ticket>` | closed |
 
 If the role a stage needs isn't defined under `.agents/roles/` yet, stop that ticket, comment that the stage is unavailable, and add `blocked`.
 
