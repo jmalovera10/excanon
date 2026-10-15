@@ -8,7 +8,11 @@ How agents and the maintainer track work in the private `jmalovera10/excanon-bac
 - Only the maintainer and `excanon-bot` can write there, so agents treat its contents as trusted, unlike issues in the public repository.
 - The bot manages issues and labels through its own GitHub App identity. No personal token is involved.
 
-**Security vulnerabilities never go into the backlog.** They follow the embargoed security response workflow and GitHub's private advisories.
+**Security vulnerabilities stay out of normal tickets.** The only exception is automated runs, which have no private session to report to. They record an embargoed finding as an issue labeled `embargoed`, and that issue is off-limits to every agent except the Security Response Coordinator:
+
+- Agents never read, search, quote, link or summarize `embargoed` issues. Filter them out of every query (`-label:embargoed`).
+- An `embargoed` issue has no stage label and never appears in reports.
+- The maintainer handles it with `/security-response` locally, then closes it.
 
 ## Ticket lifecycle
 
