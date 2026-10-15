@@ -1,0 +1,87 @@
+name: "Agent: PR comment responder"
+
+# Runs when the maintainer comments on a pull request opened by excanon-bot.
+# Agent rules always come from main; the PR's files are checked out into ./pr-head.
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-pr-comments-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  respond:
+    if: >-
+      github.actor == 'jmalovera10' &&
+      (
+        (github.event_name == 'issue_comment' && github.event.issue.pull_request && github.event.issue.user.login == 'excanon-bot[bot]') ||
+        (github.event_name == 'pull_request_review_comment' && github.event.pull_request.user.login == 'excanon-bot[bot]') ||
+        (github.event_name == 'pull_request_review' && github.event.pull_request.user.login == 'excanon-bot[bot]' &&
+          github.event.review.state != 'approved' && github.event.review.body != '')
+      )
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Bot token (excanon only)
+        id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.EXCANON_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.EXCANON_BOT_PRIVATE_KEY }}
+          repositories: excanon
+
+      - name: Find the PR branch
+        id: pr
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          PR: ${{ github.event.pull_request.number || github.event.issue.number }}
+        run: |
+          echo "number=$PR" >> "$GITHUB_OUTPUT"
+          echo "branch=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json headRefName --jq .headRefName)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out rules from main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - name: Check out the PR into ./pr-head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.pr.outputs.branch }}
+          path: pr-head
+          token: ${{ steps.token.outputs.token }}
+          fetch-depth: 0
+
+      - uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+        with:
+          otp-version: "28.1"
+          elixir-version: "1.19.5"
+
+      - name: Respond
+        uses: anthropics/claude-code-action@0e15314f8e5a161ef20b62a6092069c7dd88aa1d # v1.0.250
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ steps.token.outputs.token }}
+          bot_id: "341576395"
+          bot_name: "excanon-bot[bot]"
+          claude_args: >-
+            --add-dir pr-head
+            --allowedTools "Bash,Read,Write,Edit,Grep,Glob,Agent,Skill"
+          prompt: |
+            Follow .agents/workflows/pr-comments.md exactly, reading it and AGENTS.md from the checkout root (main).
+            Repository: ${{ github.repository }}
+            Pull request: #${{ steps.pr.outputs.number }} on branch ${{ steps.pr.outputs.branch }}, checked out in ./pr-head
+            Event: ${{ github.event_name }}
+            Comment URL: ${{ github.event.comment.html_url || github.event.review.html_url }}

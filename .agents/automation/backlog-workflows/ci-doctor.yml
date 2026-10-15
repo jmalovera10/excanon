@@ -1,0 +1,50 @@
+name: "Agent: CI doctor"
+# Lives in jmalovera10/excanon-backlog (private), so its logs stay private.
+# Agent rules and code come from jmalovera10/excanon main.
+
+on:
+  repository_dispatch:
+    types: [ci-failure]
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Bot token (excanon and backlog)
+        id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.EXCANON_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.EXCANON_BOT_PRIVATE_KEY }}
+          repositories: excanon,excanon-backlog
+
+      - name: Check out excanon (agent rules and code)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jmalovera10/excanon
+          token: ${{ steps.token.outputs.token }}
+          fetch-depth: 0
+
+      - uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+        with:
+          otp-version: "28.1"
+          elixir-version: "1.19.5"
+
+      - run: mix deps.get
+
+      - name: Run agent
+        uses: anthropics/claude-code-action@0e15314f8e5a161ef20b62a6092069c7dd88aa1d # v1.0.250
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ steps.token.outputs.token }}
+          bot_id: "341576395"
+          bot_name: "excanon-bot[bot]"
+          claude_args: >-
+            --allowedTools "Bash,Read,Write,Edit,Grep,Glob,Agent,Skill,WebSearch,WebFetch"
+          prompt: "/ci-doctor ${{ github.event.client_payload.run_id }}"
