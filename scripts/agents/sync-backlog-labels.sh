@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
-# Creates or updates the labels from .agents/backlog/labels.tsv in the backlog repository.
-# Usage: scripts/agents/sync-backlog-labels.sh [--prune] [owner/repo]
-#   --prune     also delete labels that are not in labels.tsv (asks for confirmation)
+# Creates or updates labels from a TSV file (name, color, description) in a repository.
+# Usage: scripts/agents/sync-backlog-labels.sh [--prune] [--file labels.tsv] [owner/repo]
+#   --prune     also delete labels that are not in the file (asks for confirmation)
+#   --file      defaults to .agents/backlog/labels.tsv
 #   owner/repo  defaults to jmalovera10/excanon-backlog
+# Public issue labels: scripts/agents/sync-backlog-labels.sh --file .agents/backlog/public-labels.tsv jmalovera10/excanon
 set -euo pipefail
 
+root="$(cd "$(dirname "$0")/../.." && pwd)"
 prune=false
-if [[ "${1:-}" == "--prune" ]]; then
-  prune=true
-  shift
-fi
+labels_file="$root/.agents/backlog/labels.tsv"
+while [[ "${1:-}" == --* ]]; do
+  case "$1" in
+    --prune) prune=true; shift ;;
+    --file) labels_file="$(cd "$(dirname "$2")" && pwd)/$(basename "$2")"; shift 2 ;;
+    *) echo "unknown option $1" >&2; exit 2 ;;
+  esac
+done
 repo="${1:-jmalovera10/excanon-backlog}"
-labels_file="$(cd "$(dirname "$0")/../.." && pwd)/.agents/backlog/labels.tsv"
 
 command -v gh >/dev/null || { echo "gh CLI is required" >&2; exit 1; }
 
