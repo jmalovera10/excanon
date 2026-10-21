@@ -78,7 +78,7 @@ Report what you ran and what it printed. Label every claim as **measured** (you 
 
 ## Work tracking
 
-The backlog lives in a private repository, `jmalovera10/excanon-backlog`. Proposals, specs and pipeline status stay there until the maintainer decides to make something public. Nothing from the private backlog is copied into this public repository unless the task says so. Tickets, stage labels and transitions follow the [backlog protocol](.agents/backlog/README.md).
+The backlog lives in a private repository, `jmalovera10/excanon-backlog`. Proposals, specs and pipeline status stay there until the maintainer decides to make something public. Nothing from the private backlog is copied into this public repository unless the task says so. Tickets, stage labels and transitions follow the [backlog protocol](.agents/backlog/README.md). Issues labeled `embargoed` are off-limits: only the maintainer and the Security Response Coordinator read them.
 
 ## Asking the maintainer
 
@@ -89,6 +89,8 @@ Stop and ask when:
 - following this file would contradict what you observe.
 
 Make the question answerable in one reply: the decision, the options, your recommendation, and what happens by default. Anything you can find out by running code is not a question. Run it.
+
+Instructions for the maintainer, such as setup steps, settings, secrets or commands to run, go only to the maintainer: in the session, or in the private backlog when no session exists. Never put them in pull requests, commits, public issues, run logs or repository files.
 
 ## Changing these rules
 
