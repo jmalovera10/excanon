@@ -2,6 +2,8 @@
 
 This document describes the recommended process for releasing a new version of Excanon.
 
+The Release Engineer agent (`/release`, see `.agents/roles/release.md`) prepares steps 1 to 3 as a release PR. After merging it, the maintainer tags and publishes, following steps 4 and 5.
+
 ## 1. Prepare the Release
 
 - Update `CHANGELOG.md` under the `[Unreleased]` section with the new changes.
