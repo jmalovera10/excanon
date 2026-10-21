@@ -24,3 +24,7 @@ excanon-*.tar
 
 # Embargoed security work. Never commit; see .agents/roles/security-response.md.
 /.embargo/
+
+# Inputs and outputs of automated agent runs; see .agents/automation.md.
+/.agent-input/
+/.agent-output/
