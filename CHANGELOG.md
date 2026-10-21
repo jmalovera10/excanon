@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Add `append`, `in`, and `len` operations for working with lists, strings, and maps in rule
+  conditions and actions.
 - Add `log` operation — a transparent pass-through that logs an evaluated value at debug
   level via `Logger` and returns it unchanged, usable inside `conditions` as well as
   `actions`.
