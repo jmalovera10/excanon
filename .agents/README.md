@@ -27,6 +27,7 @@ CLAUDE.md                 Claude Code entry point; imports AGENTS.md
   skills/                 reusable procedures (SKILL.md folders)
   workflows/              multi-role flows started by the maintainer (same frontmatter as main roles)
   templates/              handoff documents: proposal, spec, brief, report
+  automation.md           which flows run on their own, where, and what they can touch
 scripts/agents/           helper scripts: backlog label sync, adapter generator, public API diff
 docs/adr/                 architecture decision records, published with the changes they describe
 .claude/skills/           generated for Claude Code; never edit by hand
@@ -100,7 +101,7 @@ Work state lives as labeled issues in the private `jmalovera10/excanon-backlog` 
 | Guardian | Performance Engineer | Benchmarks, profiles, guards against slowdowns and proposes performance improvements. |
 | Operations | Release Engineer | CI and release preparation. Publishing stays with the maintainer. |
 | Operations | CI Doctor | Diagnoses CI failures and hands each fix to the owning role. |
-| Operations | Triage | Reproduces and routes incoming issues, after the maintainer approves the run. |
+| Operations | Triage | Reproduces and routes incoming issues, run locally under the maintainer's supervision. |
 | Operations | Bug Investigator | Reproduces bugs and finds root causes. Stops after three failed attempts. |
 | Operations | Docs Writer | README, module docs, doctests, changelog. |
 | Operations | Retro | Turns repeated corrections into rules, checks and templates. |
