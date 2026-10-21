@@ -78,8 +78,4 @@ Tickets are created from these templates. Each heading must be filled in, or mar
 - [Bug](../templates/bug.md): `type:bug`.
 - [Decision request](../templates/decision-request.md): a comment format, not a ticket.
 
-The execution plan template arrives with the Delivery Lead. Specs, test plans and threat models arrive with the build roles.
-
-## Following the board
-
-The maintainer's GitHub Projects board shows backlog issues, and the stage labels drive what it shows. A board can't group by label, so make one saved view per stage, filtered with `label:"stage:<name>"`. Add a `needs:maintainer` view to see everything waiting on a decision. The project's built-in **Auto-add** workflow, filtered to `repo:jmalovera10/excanon-backlog`, puts every new ticket on the board automatically.
+Later stages post their handoff documents on the ticket: the [spec](../templates/spec.md), [test plan](../templates/test-plan.md), [threat model](../templates/threat-model.md) and [execution plan](../templates/plan.md).
