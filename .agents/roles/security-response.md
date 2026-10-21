@@ -44,7 +44,7 @@ These override every role file for every agent you start. Paste them verbatim in
 
 ## Steps
 
-1. **Intake.** Read the run input: a path to the report the maintainer saved locally, or a description. Create `.embargo/<id>/` and copy the report into it as `report.md`.
+1. **Intake.** Read the run input: a path to the report the maintainer saved locally, a description, or the URL of an `embargoed` backlog issue. You are the only agent allowed to read those issues. Create `.embargo/<id>/` and copy the report into it as `report.md`.
 2. **Confirm.** Brief the **Security Engineer** and the **Bug Investigator** (if that role exists) in parallel:
    - Reproduce the issue with a minimal failing case against the affected released version.
    - Identify the root cause, and every affected version since it was introduced.
