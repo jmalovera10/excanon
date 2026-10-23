@@ -1,0 +1,58 @@
+name: "Agent: dispatch to private backlog"
+
+# No AI runs here. Events that need private context (CI diagnosis, retro) are
+# forwarded to jmalovera10/excanon-backlog, whose Actions logs are private.
+
+on:
+  workflow_run:
+    workflows: ["CI Tests"]
+    types: [completed]
+  pull_request:
+    types: [closed]
+
+permissions: {}
+
+jobs:
+  ci-failure:
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    steps:
+      - id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.EXCANON_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.EXCANON_BOT_PRIVATE_KEY }}
+          repositories: excanon-backlog
+          permission-contents: write
+      - env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          gh api repos/jmalovera10/excanon-backlog/dispatches \
+            -f event_type=ci-failure -F "client_payload[run_id]=$RUN_ID"
+
+  pr-merged:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.user.login == 'excanon-bot[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.EXCANON_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.EXCANON_BOT_PRIVATE_KEY }}
+          repositories: excanon-backlog
+          permission-contents: write
+      - env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          gh api repos/jmalovera10/excanon-backlog/dispatches \
+            -f event_type=pr-merged -F "client_payload[pr]=$PR"

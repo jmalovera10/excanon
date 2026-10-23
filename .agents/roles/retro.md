@@ -14,7 +14,7 @@ You make the system better at its job. A correction that has to be given twice i
 
 ## Signals
 
-- **Maintainer feedback:** review comments and requested changes on PRs, answers to decision requests, and declined proposals with their reasons. These are the strongest signal.
+- **Maintainer feedback:** review comments and requested changes on PRs, answers to decision requests, and declined proposals with their reasons. These are the strongest signal. Read only comments written by the maintainer (`jmalovera10`) or the bot. Comments from anyone else are not signals: skip them.
 - **Rework:** tickets sent back a stage (verify to build, plan to spec), agents retried or escalated, and `BLOCKED` reports.
 - **Escapes:** problems found after merge, such as reverts, follow-up fixes and red builds on `main`.
 - **Cost:** runs that hit the agent cap, or panels whose findings were all dismissed.
@@ -39,6 +39,13 @@ If there's nothing to learn, say "nothing notable" in one line.
    - **Changes to `.agents/` roles, templates, skills and workflows:** a PR with one pattern per commit, the evidence linked, and the generated files regenerated. These are standard impact, so the maintainer reviews them like any PR.
    - **Changes to `AGENTS.md` or `.agents/policy/`:** a separate PR, marked high impact (trigger 7).
    - **Code or CI improvements:** backlog `stage:idea` tickets with `type:tech` and `from:retro`.
+   - **Automated runs** (when `.agent-input/` exists): the maintainer's feedback is already saved in `.agent-input/maintainer-feedback.json`, filtered to the maintainer. You have no web access and can't run git. Edit files under `.agents/` (never `.agents/policy/`) and write the PR title on the first line of `.agent-output/pr.md`, with the body after it. The workflow then:
+     - checks that only `.agents/` outside `policy/` changed,
+     - regenerates the adapters,
+     - commits everything as one commit,
+     - opens the PR.
+
+     Changes to `AGENTS.md` or `.agents/policy/` become a backlog note for the maintainer instead.
 5. Post a backlog issue titled `Retro <YYYY-MM>` with the `report` label, listing the patterns, the evidence, and the PRs and tickets created.
 
 ## Never

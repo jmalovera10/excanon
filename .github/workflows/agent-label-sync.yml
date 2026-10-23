@@ -1,0 +1,32 @@
+name: "Agent: sync backlog labels"
+
+# No AI runs here. Keeps the private backlog's labels in step with labels.tsv.
+
+on:
+  push:
+    branches: [main]
+    paths: [".agents/backlog/labels.tsv"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    # A manual run from another branch would run that branch's script with the backlog token.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.EXCANON_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.EXCANON_BOT_PRIVATE_KEY }}
+          repositories: excanon-backlog
+          permission-issues: write
+      - env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        run: scripts/agents/sync-backlog-labels.sh jmalovera10/excanon-backlog
