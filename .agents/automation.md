@@ -17,6 +17,7 @@ flowchart LR
     D1 --> CD[CI Doctor]
     D2 --> RE[Retro after merge]
     SCH[Mondays 07:52] --> DI[Discovery]
+    PRI[Maintainer sets stage:prioritized] --> PT[Prioritized ticket, no AI]
     MON[1st of the month] --> RM[Retro monthly]
   end
 ```
@@ -33,6 +34,7 @@ Each run has three parts. Non-AI steps run before the agent and save what it nee
 | Discovery | Mondays at 07:52 Bogota, or by hand | Runs the code-health commands and saves each output | Read the checkout; search the web; fetch allowlisted domains; write backlog issues | Nothing |
 | Retro | A bot PR is merged; the 1st of each month; or by hand | Saves the maintainer's PR feedback, filtered to the maintainer | Read and edit the checkout; write backlog issues | Checks that only `.agents/` (not `policy/`) changed, regenerates adapters, commits, and opens a PR |
 | Label sync | `labels.tsv` changes on `main` | | No AI. Updates the backlog's labels. | |
+| Prioritized ticket | The maintainer adds `stage:prioritized` to a backlog ticket | | No AI. After 60 seconds without further label edits, removes other `stage:*` labels and comments with the local `/delivery-lead <n>` command, the ticket's place in the queue and the work-in-progress slots. Skips `embargoed` issues. | |
 
 Limits that apply to every agent, subagents included:
 
