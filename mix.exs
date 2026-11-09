@@ -35,7 +35,7 @@ defmodule Excanon.MixProject do
     [
       {:credo, "~> 1.7.17", only: [:dev]},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.16.0", only: [:dev]},
+      {:sobelow, "~> 0.18.0", only: [:dev]},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:jason, "~> 1.4"},
       {:odgn_json_pointer, "~> 3.1.0"}
