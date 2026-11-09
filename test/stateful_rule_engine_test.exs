@@ -506,7 +506,7 @@ defmodule StatefulRuleEngineTest do
     test "tp3 the supervised engine is found by name" do
       start_sup!([{StatefulRuleEngine, :sre_order}])
       assert :ok = StatefulRuleEngine.load_rules(:sre_order, @sre_rules)
-      assert {:ok, %{"x" => 1}} = StatefulRuleEngine.evaluate(:sre_order, %{})
+      assert StatefulRuleEngine.evaluate(:sre_order, %{}) == {:ok, %{"x" => 1}}
     end
 
     test "tp4 a restarted engine has no rules (fail-open) until reloaded" do
@@ -537,6 +537,12 @@ defmodule StatefulRuleEngineTest do
       :ok = StatefulRuleEngine.load_rules(:sre_a, @sre_rules)
       assert StatefulRuleEngine.evaluate(:sre_a, %{}) == {:ok, %{"x" => 1}}
       assert StatefulRuleEngine.evaluate(:sre_b, %{}) == {:ok, %{}}
+
+      assert Supervisor.terminate_child(sup, :sre_a) == :ok
+      assert Process.whereis(:sre_a) == nil
+      assert {:ok, pid} = Supervisor.restart_child(sup, :sre_a)
+      assert is_pid(pid)
+      assert Process.whereis(:sre_a) == pid
     end
 
     test "tp5b two bare children collide on the shared id" do
@@ -723,7 +729,7 @@ defmodule StatefulRuleEngineTest do
 
       # FLIP THIS: this ArgumentError assertion documents today's evaluate/2 `is_atom` guard.
       # It must flip to an {:ok, _} assertion when that follow-up (or #14) changes it.
-      assert_raise ArgumentError, fn ->
+      assert_raise ArgumentError, "Invalid arguments for evaluation", fn ->
         StatefulRuleEngine.evaluate({:global, :sre_g15}, %{})
       end
     end
