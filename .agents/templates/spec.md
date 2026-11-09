@@ -6,9 +6,12 @@ The maintainer reads this to decide. Lead with diagrams and plain language:
 a reader who doesn't know excanon's internals should understand the change from
 the summary and diagrams alone. Explain any technical term the first time it
 appears, or replace it with a plain description.
+Revise this comment in place and raise rev; log the change in a one-line
+comment. Link to other artifacts instead of restating them. See the backlog
+protocol, "Writing on tickets".
 -->
 
-## Spec: <ticket title>
+**Spec** · rev 1 · Architect
 
 **Proposal:** <link> · **Impact:** <trivial | standard | high>, triggers <numbers or none> · **Version bump:** <none | patch | minor | major>
 

@@ -2,9 +2,12 @@
 Test plan, written by QA from the spec before any code exists, and posted on
 the backlog ticket. The Developer writes these tests first, and they must fail
 before the implementation lands.
+Revise this comment in place and raise rev; log the change in a one-line
+comment. Link to other artifacts instead of restating them. See the backlog
+protocol, "Writing on tickets".
 -->
 
-## Test plan: <ticket title>
+**Test plan** · rev 1 · QA
 
 **Spec:** <link>
 

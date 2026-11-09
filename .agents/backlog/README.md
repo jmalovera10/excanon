@@ -58,6 +58,28 @@ Rules:
 
 `labels.tsv` holds the canonical list. To create or update the labels in the backlog repository, run [`scripts/agents/sync-backlog-labels.sh`](../../scripts/agents/sync-backlog-labels.sh).
 
+## Writing on tickets
+
+A ticket holds the **artifacts** and a **short log**. The maintainer reads the artifacts to decide and the log to see what changed. Nothing is written twice.
+
+1. **One comment per artifact:** spec, test plan, threat model, API check and execution plan. Each starts with a single header line, `**<Artifact>** · rev <n> · <role>`. Don't repeat the ticket title, the ticket body or another artifact: link to it.
+2. **Revise in place.** Edit the artifact's comment and raise `rev`. Never post a new copy, a "revision 2" or a partial amendment. GitHub keeps each comment's edit history, so earlier versions stay traceable.
+3. **Log every change in one short comment, at most 3 lines:**
+   - revisions: `<Artifact> rev <n>: <what changed and why> (<link>)`,
+   - stage changes: `<from> → <to>: <one-line outcome> (<links>)`,
+   - decisions: `Decision: <what was decided>, by <who> (<link>)`.
+
+   Validator findings and fix rounds go in the log line, not into the artifact.
+4. **Each fact lives in one artifact.**
+   - Behavior and acceptance criteria belong in the spec.
+   - Test cases belong in the test plan.
+   - Threats belong in the threat model.
+   - Work units belong in the plan.
+
+   Other artifacts refer to them by section or number instead of restating them.
+5. **Keep to the template.** A section with nothing to say is `n/a: <reason>` on one line. Skip provenance paragraphs: the header line says who wrote it.
+6. **The ticket body ends with an `Artifacts:` line** linking each artifact comment. The Delivery Lead adds a link when an artifact is first posted.
+
 ## Asking the maintainer
 
 When a ticket needs a decision, the agent:
@@ -82,4 +104,4 @@ Tickets are created from these templates. Each heading must be filled in, or mar
 - [Bug](../templates/bug.md): `type:bug`.
 - [Decision request](../templates/decision-request.md): a comment format, not a ticket.
 
-Later stages post their handoff documents on the ticket: the [spec](../templates/spec.md), [test plan](../templates/test-plan.md), [threat model](../templates/threat-model.md) and [execution plan](../templates/plan.md).
+Later stages post their handoff documents on the ticket, one comment each, following [Writing on tickets](#writing-on-tickets): the [spec](../templates/spec.md), [test plan](../templates/test-plan.md), [threat model](../templates/threat-model.md) and [execution plan](../templates/plan.md).
