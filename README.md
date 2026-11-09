@@ -40,15 +40,6 @@ Here's a complete example of setting up and using the rule engine:
 # 1. Start a rule engine agent
 {:ok, _pid} = StatefulRuleEngine.start_link(:order_engine, [])
 
-# Alternatively, add StatefulRuleEngine to your application's supervision tree for automatic startup:
-# In your application.ex:
-# def start(_type, _args) do
-#   children = [
-#     {Excanon.StatefulRuleEngine, :order_engine}
-#   ]
-#   Supervisor.start_link(children, strategy: :one_for_one)
-# end
-
 # 2. Define rules in JSON
 rules_json = ~s([
   {
@@ -89,6 +80,79 @@ facts = %{
 # - order.discount_amount: 6.0
 # - customer.loyalty_points: 60
 ```
+
+## Running under a supervisor
+
+In an application you usually let a supervisor start the engine instead of calling
+`start_link/2` yourself. Use this **instead of** step 1 of the Quick Start, not in addition
+to it: both register the name `:order_engine`, and starting it twice fails with
+`{:already_started, pid}`.
+
+```elixir
+# lib/my_app/application.ex
+def start(_type, _args) do
+  children = [
+    {StatefulRuleEngine, :order_engine}
+  ]
+
+  Supervisor.start_link(children, strategy: :one_for_one, name: MyApp.Supervisor)
+end
+```
+
+The engine starts with no rules. Load them with `StatefulRuleEngine.load_rules(:order_engine, rules_json)`,
+or let the supervisor do it (see below).
+
+### Several engines
+
+A supervisor tells its children apart by id, and `{StatefulRuleEngine, name}` always uses the
+id `StatefulRuleEngine`. Two such entries in one child list fail with
+`{:error, {:start_spec, {:duplicate_child_name, StatefulRuleEngine}}}`. Give each engine its own id:
+
+```elixir
+children = [
+  Supervisor.child_spec({StatefulRuleEngine, :order_engine}, id: :order_engine),
+  Supervisor.child_spec({StatefulRuleEngine, :pricing_engine}, id: :pricing_engine)
+]
+```
+
+### Restarts and reloading rules
+
+Rules live only in the engine process. If it crashes, the supervisor starts a fresh engine
+under the same name with **no rules loaded**.
+
+> **Warning:** After a restart, and before the first `load_rules/2`, `evaluate/2` succeeds and applies no rules. If your rules enforce a security or compliance decision, treat a missing output key as deny, and reload rules as part of supervision.
+
+To reload rules as part of supervision, add a loader child right after the engine and use the
+`:rest_for_one` strategy. That strategy restarts every child listed after the one that crashed,
+so each engine restart runs the loader again:
+
+```elixir
+defmodule MyApp.RuleLoader do
+  # Loads the rules once, then returns :ignore so no process stays running.
+  def start_link(engine, path) do
+    :ok = StatefulRuleEngine.load_rules(engine, File.read!(path))
+    :ignore
+  end
+end
+
+children = [
+  {StatefulRuleEngine, :order_engine},
+  %{
+    id: :order_rules_loader,
+    start:
+      {MyApp.RuleLoader, :start_link,
+       [:order_engine, Application.app_dir(:my_app, "priv/rules/orders.json")]}
+  }
+]
+
+Supervisor.start_link(children, strategy: :rest_for_one, name: MyApp.Supervisor)
+```
+
+If the rules fail to load, the loader crashes and the supervisor fails to start instead of
+running an engine with no rules. A short window remains between the engine restarting and the
+loader finishing, which is why the advice above to treat a missing key as deny still applies.
+Under `:rest_for_one`, a crash also restarts everything listed after the engine, so in a larger
+app put the engine and its loader in a supervisor of their own.
 
 ## Rule Dependencies
 

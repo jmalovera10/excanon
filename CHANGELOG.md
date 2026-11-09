@@ -14,7 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- 
+- Fix starting `StatefulRuleEngine` from a supervisor: `{StatefulRuleEngine, name}` in a child
+  list failed with `UndefinedFunctionError` because `start_link/1` does not exist.
+  `StatefulRuleEngine.child_spec/1` now starts the engine through `start_link/2`. The child id
+  stays `StatefulRuleEngine`, so to run several engines under one supervisor give each a unique
+  id with `Supervisor.child_spec/2`. The README's supervision example, which referenced a
+  nonexistent `Excanon.StatefulRuleEngine`, is corrected, and the docs now warn that a
+  restarted engine applies no rules until `load_rules/2` is called again, with a supervised
+  reload pattern.
 
 ### Changed
 
