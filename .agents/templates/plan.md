@@ -2,9 +2,12 @@
 Execution plan. The Delivery Lead writes it after the spec is settled and posts
 it on the ticket. The Architect and QA validate it independently before build.
 Fill in every section, or write "n/a: <reason>".
+Revise this comment in place and raise rev; log the change in a one-line
+comment. Link to other artifacts instead of restating them. See the backlog
+protocol, "Writing on tickets".
 -->
 
-## Plan for <ticket title>
+**Plan** · rev 1 · Delivery Lead
 
 **Spec:** <link> · **Test plan:** <link> · **Impact:** <level>
 

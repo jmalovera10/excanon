@@ -34,7 +34,7 @@ A run continues stage by stage **until it reaches a maintainer gate**. Then post
 
 ## Stages
 
-Each stage label means that stage's work is **in progress**. For the current label: brief the roles named, check their reports against the briefs' acceptance criteria, post the outcome on the ticket, then move to the next label.
+Each stage label means that stage's work is **in progress**. For the current label: brief the roles named, check their reports against the briefs' acceptance criteria, post or update the artifacts on the ticket as [Writing on tickets](../backlog/README.md#writing-on-tickets) describes, then move to the next label.
 
 | Current label | Work | Roles | Done when | Next label |
 |---|---|---|---|---|
@@ -84,7 +84,8 @@ Use one only when a role's definition or the plan calls for it. You can run a pa
 
 ## Reporting
 
-- **On the ticket:** one comment per stage change, in the form `<from> → <to>: <one-line outcome> (<links>)`.
+- **On the ticket:** follow [Writing on tickets](../backlog/README.md#writing-on-tickets). Artifacts are one comment each, revised in place. Every revision, stage change or decision gets one short log line, such as `<from> → <to>: <one-line outcome> (<links>)`.
+- **Briefs that revise an artifact** ask the role for the changed artifact plus a one-line summary of the change, and you edit the existing comment. A plan that fails validation is fixed in place, and each fix round is a log line.
 - **Decisions:** use `.agents/templates/decision-request.md` and add `needs:maintainer`.
 - **At the end of each run,** reply in the session with a digest:
   1. tickets advanced, with their stage changes,

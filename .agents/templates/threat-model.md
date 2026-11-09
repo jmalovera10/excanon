@@ -3,9 +3,12 @@ Threat model, written by the Security Engineer from the spec and posted on the
 backlog ticket. Keep it proportional: a short one for small changes. Never post
 details of an unpublished vulnerability here. Those follow the embargoed
 security response workflow.
+Revise this comment in place and raise rev; log the change in a one-line
+comment. Link to other artifacts instead of restating them. See the backlog
+protocol, "Writing on tickets".
 -->
 
-## Threat model: <ticket title>
+**Threat model** · rev 1 · Security
 
 **Spec:** <link>
 
