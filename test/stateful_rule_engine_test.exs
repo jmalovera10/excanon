@@ -373,7 +373,7 @@ defmodule StatefulRuleEngineTest do
 
   defp start_sup!(children, opts \\ [strategy: :one_for_one]) do
     start_supervised!(%{
-      id: :qa_sup,
+      id: :test_sup,
       type: :supervisor,
       start: {Supervisor, :start_link, [children, opts]}
     })
@@ -407,14 +407,14 @@ defmodule StatefulRuleEngineTest do
   end
 
   describe "child_spec/1" do
-    test "tp1 returns the id and a start_link/2 call for an atom name" do
+    test "returns the id and a start_link/2 call for an atom name" do
       assert StatefulRuleEngine.child_spec(:sre_order) == %{
                id: StatefulRuleEngine,
                start: {StatefulRuleEngine, :start_link, [:sre_order, []]}
              }
     end
 
-    test "tp6 id can be overridden with Supervisor.child_spec/2" do
+    test "id can be overridden with Supervisor.child_spec/2" do
       spec = Supervisor.child_spec({StatefulRuleEngine, :sre_c}, id: :sre_custom)
 
       assert spec == %{
@@ -429,7 +429,7 @@ defmodule StatefulRuleEngineTest do
       assert Process.whereis(:sre_c) == pid
     end
 
-    test "tp9a string argument is passed through and creates no atom" do
+    test "string argument is passed through and creates no atom" do
       assert StatefulRuleEngine.child_spec("sre_never_an_atom") == %{
                id: StatefulRuleEngine,
                start: {StatefulRuleEngine, :start_link, ["sre_never_an_atom", []]}
@@ -449,7 +449,7 @@ defmodule StatefulRuleEngineTest do
       assert_raise ArgumentError, fn -> String.to_existing_atom("sre_never_an_atom") end
     end
 
-    test "tp9b nil starts an unnamed engine" do
+    test "nil starts an unnamed engine" do
       assert StatefulRuleEngine.child_spec(nil) == %{
                id: StatefulRuleEngine,
                start: {StatefulRuleEngine, :start_link, [nil, []]}
@@ -461,7 +461,7 @@ defmodule StatefulRuleEngineTest do
       assert Process.info(pid, :registered_name) == {:registered_name, []}
     end
 
-    test "tp9c bare module passes [] and the child fails to start" do
+    test "bare module passes [] and the child fails to start" do
       assert StatefulRuleEngine.child_spec([]) == %{
                id: StatefulRuleEngine,
                start: {StatefulRuleEngine, :start_link, [[], []]}
@@ -475,7 +475,7 @@ defmodule StatefulRuleEngineTest do
                Supervisor.start_link([StatefulRuleEngine], strategy: :one_for_one)
     end
 
-    test "tp9d global and via names are passed through without raising" do
+    test "global and via names are passed through without raising" do
       assert StatefulRuleEngine.child_spec({:global, :sre_g}) == %{
                id: StatefulRuleEngine,
                start: {StatefulRuleEngine, :start_link, [{:global, :sre_g}, []]}
@@ -489,7 +489,7 @@ defmodule StatefulRuleEngineTest do
   end
 
   describe "supervision" do
-    test "tp2 a supervisor starts the engine under its name" do
+    test "a supervisor starts the engine under its name" do
       sup = start_sup!([{StatefulRuleEngine, :sre_order}])
       pid = Process.whereis(:sre_order)
       assert is_pid(pid)
@@ -498,18 +498,18 @@ defmodule StatefulRuleEngineTest do
                [{StatefulRuleEngine, pid, :worker, [StatefulRuleEngine]}]
     end
 
-    test "tp2b start_supervised! starts the engine under its name" do
+    test "start_supervised! starts the engine under its name" do
       pid = start_supervised!({StatefulRuleEngine, :sre_exunit})
       assert Process.whereis(:sre_exunit) == pid
     end
 
-    test "tp3 the supervised engine is found by name" do
+    test "the supervised engine is found by name" do
       start_sup!([{StatefulRuleEngine, :sre_order}])
       assert :ok = StatefulRuleEngine.load_rules(:sre_order, @sre_rules)
       assert StatefulRuleEngine.evaluate(:sre_order, %{}) == {:ok, %{"x" => 1}}
     end
 
-    test "tp4 a restarted engine has no rules (fail-open) until reloaded" do
+    test "a restarted engine has no rules (fail-open) until reloaded" do
       start_sup!([{StatefulRuleEngine, :sre_order}])
       old = Process.whereis(:sre_order)
       :ok = StatefulRuleEngine.load_rules(:sre_order, @sre_rules)
@@ -524,7 +524,7 @@ defmodule StatefulRuleEngineTest do
                {:ok, %{"x" => 1, "y" => 2}}
     end
 
-    test "tp5 several engines with their own ids are independent" do
+    test "several engines with their own ids are independent" do
       sup =
         start_sup!([
           Supervisor.child_spec({StatefulRuleEngine, :sre_a}, id: :sre_a),
@@ -545,7 +545,7 @@ defmodule StatefulRuleEngineTest do
       assert Process.whereis(:sre_a) == pid
     end
 
-    test "tp5b two bare children collide on the shared id" do
+    test "two bare children collide on the shared id" do
       Process.flag(:trap_exit, true)
 
       assert Supervisor.start_link(
@@ -557,7 +557,7 @@ defmodule StatefulRuleEngineTest do
       assert Process.whereis(:sre_b) == nil
     end
 
-    test "tp7 a full start override keeps working" do
+    test "a full start override keeps working" do
       spec =
         Supervisor.child_spec({StatefulRuleEngine, :sre_w},
           start: {StatefulRuleEngine, :start_link, [:sre_w, []]},
@@ -569,7 +569,7 @@ defmodule StatefulRuleEngineTest do
       assert {:ok, %{"x" => 1}} = StatefulRuleEngine.evaluate(:sre_w, %{})
     end
 
-    test "tp7A a start-only override keeps the shared id" do
+    test "a start-only override keeps the shared id" do
       sup = start_sup!([child_spec_via_start(:sre_sa)])
 
       assert [{StatefulRuleEngine, _pid, :worker, _}] = Supervisor.which_children(sup)
@@ -577,7 +577,7 @@ defmodule StatefulRuleEngineTest do
       assert Process.whereis(:sre_sa) == nil
     end
 
-    test "tp7B a bare module with id and start overrides keeps working" do
+    test "a bare module with id and start overrides keeps working" do
       spec =
         Supervisor.child_spec(StatefulRuleEngine,
           id: :sre_sb,
@@ -590,7 +590,7 @@ defmodule StatefulRuleEngineTest do
       assert {:ok, %{"x" => 1}} = StatefulRuleEngine.evaluate(:sre_sb, %{})
     end
 
-    test "tp7C a string argument with id and start overrides keeps working" do
+    test "a string argument with id and start overrides keeps working" do
       spec =
         Supervisor.child_spec({StatefulRuleEngine, "sre_sc"},
           id: :sre_sc,
@@ -603,7 +603,7 @@ defmodule StatefulRuleEngineTest do
       assert {:ok, %{"x" => 1}} = StatefulRuleEngine.evaluate(:sre_sc, %{})
     end
 
-    test "tp10 a taken name fails the child and leaves the owner alone" do
+    test "a taken name fails the child and leaves the owner alone" do
       Process.flag(:trap_exit, true)
       {:ok, taken} = StatefulRuleEngine.start_link(:sre_taken, [])
 
@@ -616,7 +616,7 @@ defmodule StatefulRuleEngineTest do
       assert Process.whereis(:sre_taken) == taken
     end
 
-    test "tp12 the README supervisor example works end to end" do
+    test "the README supervisor example works end to end" do
       start_sup!([{StatefulRuleEngine, :sre_readme}])
 
       rules_json = ~s([
@@ -655,7 +655,7 @@ defmodule StatefulRuleEngineTest do
       assert result["customer"]["loyalty_points"] == 60
     end
 
-    test "tp12b the README multi-engine example uses one id per engine" do
+    test "the README multi-engine example uses one id per engine" do
       sup =
         start_sup!([
           Supervisor.child_spec({StatefulRuleEngine, :sre_order_engine}, id: :sre_order_engine),
@@ -671,7 +671,7 @@ defmodule StatefulRuleEngineTest do
     end
 
     @tag :tmp_dir
-    test "tp12c the README rest_for_one loader reloads rules after a restart", %{tmp_dir: dir} do
+    test "the README rest_for_one loader reloads rules after a restart", %{tmp_dir: dir} do
       path = Path.join(dir, "rules.json")
       File.write!(path, @sre_rules)
 
@@ -696,7 +696,7 @@ defmodule StatefulRuleEngineTest do
       assert StatefulRuleEngine.evaluate(:sre_rl, %{}) == {:ok, %{"x" => 1}}
     end
 
-    test "tp14 load errors under supervision keep the engine and its rules" do
+    test "load errors under supervision keep the engine and its rules" do
       start_sup!([{StatefulRuleEngine, :sre_errs}])
       pid = Process.whereis(:sre_errs)
       assert :ok = StatefulRuleEngine.load_rules(:sre_errs, @sre_rules)
@@ -723,12 +723,12 @@ defmodule StatefulRuleEngineTest do
       assert StatefulRuleEngine.evaluate(:sre_errs, %{}) == {:ok, %{"x" => 1}}
     end
 
-    test "tp15 a global name starts and loads, but evaluate/2 rejects it (known, out of scope)" do
+    test "a global name starts and loads, but evaluate/2 rejects it (known, out of scope)" do
       start_sup!([{StatefulRuleEngine, {:global, :sre_g15}}])
       assert :ok = StatefulRuleEngine.load_rules({:global, :sre_g15}, @sre_rules)
 
       # FLIP THIS: this ArgumentError assertion documents today's evaluate/2 `is_atom` guard.
-      # It must flip to an {:ok, _} assertion when that follow-up (or #14) changes it.
+      # It must flip to an {:ok, _} assertion if evaluate/2 starts accepting non-atom names.
       assert_raise ArgumentError, "Invalid arguments for evaluation", fn ->
         StatefulRuleEngine.evaluate({:global, :sre_g15}, %{})
       end
@@ -736,7 +736,7 @@ defmodule StatefulRuleEngineTest do
   end
 
   describe "start_link/2" do
-    test "tp8a and tp8b register the name and reject a second start" do
+    test "register the name and reject a second start" do
       assert {:ok, pid} = StatefulRuleEngine.start_link(:sre_x, [])
       assert Process.whereis(:sre_x) == pid
 
@@ -744,16 +744,16 @@ defmodule StatefulRuleEngineTest do
                {:error, {:already_started, pid}}
     end
 
-    test "tp8c nil starts an unnamed engine" do
+    test "nil starts an unnamed engine" do
       assert {:ok, pid} = StatefulRuleEngine.start_link(nil, [])
       assert is_pid(pid)
     end
 
-    test "tp8d a string name raises ArgumentError" do
+    test "a string name raises ArgumentError" do
       assert_raise ArgumentError, fn -> StatefulRuleEngine.start_link("str", []) end
     end
 
-    test "tp8e a global name registers globally" do
+    test "a global name registers globally" do
       assert {:ok, pid} = StatefulRuleEngine.start_link({:global, :sre_g2}, [])
       assert :global.whereis_name(:sre_g2) == pid
     end
